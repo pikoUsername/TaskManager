@@ -9,9 +9,9 @@ namespace TaskManager.Controllers
     [ApiController]
     public class TeamControllers : ControllerBase
     {
-        private readonly ApplicationContext _context;
+        private readonly TaskManagerContext _context;
 
-        public TeamControllers(ApplicationContext context)
+        public TeamControllers(TaskManagerContext context)
         {
             _context = context;
         }

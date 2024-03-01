@@ -8,10 +8,10 @@ public class DayTimetable
     public Guid Id { get; set; }
     public DateTime StartsAt { get; set; }
     public DateTime EndsAt { get; set; }
-    public DayTimeTableTypes Type { get; set; }
-    public DayTypes Day { get; set; }
+    public DayTimeTableTypes Type { get; set; } = DayTimeTableTypes.work;
+    public DayTypes Day { get; set; } = DayTypes.Saturday; 
     public string Name { get; set; }
 
     // One-to-many relationship: DayTimetable -> WorkVisits
-    public ICollection<WorkVisit> WorkVisits { get; set; }
+    public ICollection<WorkVisit>? WorkVisits { get; set; }
 }

@@ -12,11 +12,11 @@ public class User
     public DateTime CreatedAt { get; set; }
     public string Email { get; set; }
     public string HashedPassword { get; set; }
-    public bool Blocked { get; set; }
-    public FileModel Avatar { get; set; }
-    public string Telegram { get; set; }
-    public FileModel Banner { get; set; }
-    public UserWorkTypes WorkType { get; set; }
+    public bool Blocked { get; set; } = false; 
+    public FileModel? Avatar { get; set; }
+    public string? Telegram { get; set; }
+    public FileModel? Banner { get; set; }
+    public UserWorkTypes WorkType { get; set; } = UserWorkTypes.office; 
 
     // One-to-many relationship: User -> WorkVisits
     public ICollection<WorkVisit> WorkVisits { get; set; }

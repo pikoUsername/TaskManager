@@ -3,7 +3,7 @@ using TaskManager.Database.Models;
 
 namespace TaskManager.Database; 
 
-public class ApplicationContext : DbContext
+public class TaskManagerContext : DbContext
 {
     public DbSet<User> Users { get; set; }
     public DbSet<Team> Teams { get; set; }
@@ -17,9 +17,13 @@ public class ApplicationContext : DbContext
     public DbSet<Notification> Notifications { get; set; }
     public DbSet<TaskType> TaskTypes { get; set; }
     public DbSet<FileModel> FileModels { get; set; }
-    public ApplicationContext(DbContextOptions<ApplicationContext> options)
-    : base(options)
+
+    public TaskManagerContext(DbContextOptions<TaskManagerContext> options)
+        : base(options)
     {
-        Database.EnsureCreated();   // создаем базу данных при первом обращении
+    }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
     }
 } 

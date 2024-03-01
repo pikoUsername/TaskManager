@@ -12,9 +12,9 @@ namespace TaskManager.Controllers
     [ApiController]
     public class UserControllers : ControllerBase
     {
-        private readonly ApplicationContext _context;
+        private readonly TaskManagerContext _context;
 
-        public UserControllers(ApplicationContext context)
+        public UserControllers(TaskManagerContext context)
         {
             _context = context;
         }
@@ -35,15 +35,5 @@ namespace TaskManager.Controllers
 
             return user; 
         }
-
-        //[HttpPost(Name = "create-user")]
-        //public async Task<User> RegisterUser([FromBody] RegisterUserSchema data)
-        //{
-
-        //    var user = new User
-        //    {
-                
-        //    }; 
-        //}
     }
 }

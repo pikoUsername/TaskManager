@@ -13,9 +13,9 @@ namespace TaskManager.Controllers
     public class FileController : ControllerBase
     {
         private readonly IWebHostEnvironment _environment;
-        private readonly ApplicationContext _context;
+        private readonly TaskManagerContext _context;
 
-        public FileController(IWebHostEnvironment environment, ApplicationContext context)
+        public FileController(IWebHostEnvironment environment, TaskManagerContext context)
         {
             _environment = environment;
             _context = context;
