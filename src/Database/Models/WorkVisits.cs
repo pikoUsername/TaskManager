@@ -6,10 +6,8 @@ public class WorkVisit
 {
     [Key]
     public Guid Id { get; set; }
-    public DateTime Visited_At { get; set; }
-    public DateTime Ended_At { get; set; }
-    public Guid Day_Id { get; set; }
-    public Guid User_Id { get; set; }
+    public DateTime VisitedAt { get; set; }
+    public DateTime EndedAt { get; set; }
 
     // Many-to-one relationships: WorkVisit -> User, DayTimetable
     public User User { get; set; }

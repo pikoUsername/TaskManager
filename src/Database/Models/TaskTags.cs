@@ -9,5 +9,5 @@ public class TaskTag
     public string Name { get; set; }
 
     // Many-to-many relationship: TaskTag <-> Task
-    public ICollection<Task> Tasks { get; set; }
+    public ICollection<TaskModel> Tasks { get; set; }
 }

@@ -7,8 +7,8 @@ public class Comment
     [Key]
     public Guid Id { get; set; }
     public string Text { get; set; }
-    public Guid Task_Id { get; set; }
+    public Guid TaskId { get; set; }
 
     // Many-to-one relationship: Comment -> Task
-    public Task Task { get; set; }
+    public TaskModel Task { get; set; }
 }
