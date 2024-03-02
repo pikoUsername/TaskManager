@@ -8,9 +8,11 @@ using TaskManager.Database;
 using Microsoft.EntityFrameworkCore;
 using TaskManager.Database.Models;
 using Microsoft.AspNetCore.Identity;
+using Swashbuckle.AspNetCore.Annotations;
 
-namespace TaskManager.Controllers; 
+namespace TaskManager.Controllers;
 
+[SwaggerTag("auth")]
 [Route("api/auth/")]
 [ApiController]
 public class RegisterUserController : ControllerBase
@@ -48,6 +50,7 @@ public class RegisterUserController : ControllerBase
     }
 }
 
+[SwaggerTag("auth")]
 [Route("api/auth/")]
 [ApiController]
 public class LoginUserController : ControllerBase

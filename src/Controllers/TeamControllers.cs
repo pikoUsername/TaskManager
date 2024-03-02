@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 using TaskManager.Database;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace TaskManager.Controllers
 {
+    [SwaggerTag("team")]
     [Route("api/[controller]")]
     [ApiController]
     public class TeamControllers : ControllerBase

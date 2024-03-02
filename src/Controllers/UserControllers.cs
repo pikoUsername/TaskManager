@@ -6,12 +6,14 @@ using TaskManager.Schemas;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
+using Swashbuckle.AspNetCore.Annotations;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace TaskManager.Controllers
 {
-    [Route("api/user/[controller]")]
+    [SwaggerTag("users")]
+    [Route("api/user/")]
     [ApiController]
     public class UserControllers : ControllerBase
     {

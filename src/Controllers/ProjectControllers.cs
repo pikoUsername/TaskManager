@@ -3,15 +3,16 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NpgsqlTypes;
+using Swashbuckle.AspNetCore.Annotations;
 using TaskManager.Database;
 using TaskManager.Database.Models;
 using TaskManager.Schemas;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace TaskManager.Controllers
 {
+    [SwaggerTag("projects")]
     [Route("api/project/")]
     [ApiController]
     public class ProjectControllers : ControllerBase

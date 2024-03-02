@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Swashbuckle.AspNetCore.Annotations;
 using TaskManager.Database;
 using TaskManager.Database.Models;
 using TaskManager.Schemas;
@@ -9,6 +10,7 @@ using TaskManager.Schemas;
 
 namespace TaskManager.Controllers
 {
+    [SwaggerTag("comments")]
     [Route("api/comment/")]
     [ApiController]
     public class CommentController : ControllerBase
