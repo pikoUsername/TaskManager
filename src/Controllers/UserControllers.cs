@@ -29,11 +29,16 @@ namespace TaskManager.Controllers
         }
 
         [HttpGet("{id}", Name = "get-user")]
-        public async Task<User> GetUser(Guid id)
+        public async Task<IActionResult> GetUser(Guid id)
         {
-            var user = await _context.Users.SingleOrDefaultAsync();
+            var user = await _context.Users.SingleOrDefaultAsync(
+                x => x.Id == id);
+            if (user == null)
+            {
+                return NotFound(); 
+            }
 
-            return user; 
+            return Ok(user); 
         }
     }
 }

@@ -39,7 +39,7 @@ namespace TaskManager.Controllers
                 await file.CopyToAsync(fileStream);
             }
 
-            var fileModel = new FileModel
+            var fileModel = new FileModel()
             {
                 FileName = file.FileName,
                 FilePath = fileName // Сохраняем имя файла (GUID) в базе данных

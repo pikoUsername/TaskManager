@@ -6,8 +6,8 @@ public class TaskTag
 {
     [Key]
     public Guid Id { get; set; }
-    public string Name { get; set; }
+    public string Name { get; set; } = string.Empty;
 
     // Many-to-many relationship: TaskTag <-> Task
-    public ICollection<TaskModel> Tasks { get; set; }
+    public ICollection<TaskModel> Tasks { get; set; } = new List<TaskModel>();
 }

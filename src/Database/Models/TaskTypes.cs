@@ -6,8 +6,8 @@ public class TaskType
 {
     [Key]
     public Guid Id { get; set; }
-    public string Name { get; set; }
+    public string Name { get; set; } = string.Empty; 
 
     // Многие типы задач могут быть связаны с одним проектом
-    public Project Project { get; set; }
+    public Project Project { get; set; } = new Project();
 }

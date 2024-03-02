@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace TaskManager.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class InitialMigrationV2 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -73,13 +73,12 @@ namespace TaskManager.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     FullName = table.Column<string>(type: "text", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     Email = table.Column<string>(type: "text", nullable: false),
-                    HashedPassword = table.Column<string>(type: "text", nullable: false),
+                    HashedPassword = table.Column<string>(type: "text", nullable: true),
                     Blocked = table.Column<bool>(type: "boolean", nullable: false),
-                    AvatarId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Telegram = table.Column<string>(type: "text", nullable: false),
-                    BannerId = table.Column<Guid>(type: "uuid", nullable: false),
+                    AvatarId = table.Column<Guid>(type: "uuid", nullable: true),
+                    Telegram = table.Column<string>(type: "text", nullable: true),
+                    BannerId = table.Column<Guid>(type: "uuid", nullable: true),
                     WorkType = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
@@ -89,14 +88,12 @@ namespace TaskManager.Migrations
                         name: "FK_Users_FileModels_AvatarId",
                         column: x => x.AvatarId,
                         principalTable: "FileModels",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Users_FileModels_BannerId",
                         column: x => x.BannerId,
                         principalTable: "FileModels",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(

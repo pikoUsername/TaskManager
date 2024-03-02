@@ -10,7 +10,7 @@ public class DayTimetable
     public DateTime EndsAt { get; set; }
     public DayTimeTableTypes Type { get; set; } = DayTimeTableTypes.work;
     public DayTypes Day { get; set; } = DayTypes.Saturday; 
-    public string Name { get; set; }
+    public string Name { get; set; } = string.Empty;
 
     // One-to-many relationship: DayTimetable -> WorkVisits
     public ICollection<WorkVisit>? WorkVisits { get; set; }

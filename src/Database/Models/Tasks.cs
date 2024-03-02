@@ -8,8 +8,8 @@ public class TaskModel
 {
     [Key]
     public Guid Id { get; set; }
-    public string Title { get; set; }
-    public string Description { get; set; }
+    public string Title { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
     public TaskStatus Status { get; set; }
     public DateTime StartedAt { get; set; }
     public DateTime EndsAt { get; set; }
@@ -18,6 +18,6 @@ public class TaskModel
     public User? AssignedUser { get; set; }
 
     // Many-to-many relationship: Task <-> TaskTags
-    public User CreatedBy { get; set; }
+    public User CreatedBy { get; set; } = new User();   
     public ICollection<TaskTag>? Tags { get; set; }
 }

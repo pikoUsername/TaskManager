@@ -10,6 +10,6 @@ public class WorkVisit
     public DateTime EndedAt { get; set; }
 
     // Many-to-one relationships: WorkVisit -> User, DayTimetable
-    public User User { get; set; }
-    public DayTimetable DayTimetable { get; set; }
+    public User User { get; set; } = new User();
+    public DayTimetable DayTimetable { get; set; } = new DayTimetable();    
 }

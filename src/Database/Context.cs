@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Reflection.Metadata;
 using TaskManager.Database.Models; 
 
 namespace TaskManager.Database; 
@@ -25,5 +26,15 @@ public class TaskManagerContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
+    }
+
+    protected override void OnModelCreating(ModelBuilder builder)
+    {
+        builder.Entity<User>()
+            .HasIndex(u => u.Email)
+            .IsUnique();
+        builder.Entity<User>()
+            .HasIndex(u => u.FullName)
+            .IsUnique(); 
     }
 } 

@@ -12,8 +12,8 @@ using TaskManager.Database;
 namespace TaskManager.Migrations
 {
     [DbContext(typeof(TaskManagerContext))]
-    [Migration("20240301145212_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20240302054931_Improvments")]
+    partial class Improvments
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -146,6 +146,9 @@ namespace TaskManager.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<Guid>("CreatedById")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("text");
@@ -161,6 +164,8 @@ namespace TaskManager.Migrations
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CreatedById");
 
                     b.HasIndex("IconId");
 
@@ -277,18 +282,14 @@ namespace TaskManager.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("AvatarId")
+                    b.Property<Guid?>("AvatarId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("BannerId")
+                    b.Property<Guid?>("BannerId")
                         .HasColumnType("uuid");
 
                     b.Property<bool>("Blocked")
                         .HasColumnType("boolean");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -298,12 +299,13 @@ namespace TaskManager.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<Guid?>("GroupId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("HashedPassword")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Telegram")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int>("WorkType")
@@ -314,6 +316,14 @@ namespace TaskManager.Migrations
                     b.HasIndex("AvatarId");
 
                     b.HasIndex("BannerId");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.HasIndex("FullName")
+                        .IsUnique();
+
+                    b.HasIndex("GroupId");
 
                     b.ToTable("Users");
                 });
@@ -392,6 +402,12 @@ namespace TaskManager.Migrations
 
             modelBuilder.Entity("TaskManager.Database.Models.Project", b =>
                 {
+                    b.HasOne("TaskManager.Database.Models.User", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("TaskManager.Database.Models.FileModel", "Icon")
                         .WithMany()
                         .HasForeignKey("IconId");
@@ -401,6 +417,8 @@ namespace TaskManager.Migrations
                         .HasForeignKey("TeamId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("CreatedBy");
 
                     b.Navigation("Icon");
 
@@ -458,15 +476,15 @@ namespace TaskManager.Migrations
                 {
                     b.HasOne("TaskManager.Database.Models.FileModel", "Avatar")
                         .WithMany()
-                        .HasForeignKey("AvatarId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("AvatarId");
 
                     b.HasOne("TaskManager.Database.Models.FileModel", "Banner")
                         .WithMany()
-                        .HasForeignKey("BannerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("BannerId");
+
+                    b.HasOne("TaskManager.Database.Models.Group", null)
+                        .WithMany("Users")
+                        .HasForeignKey("GroupId");
 
                     b.Navigation("Avatar");
 
@@ -510,6 +528,11 @@ namespace TaskManager.Migrations
             modelBuilder.Entity("TaskManager.Database.Models.DayTimetable", b =>
                 {
                     b.Navigation("WorkVisits");
+                });
+
+            modelBuilder.Entity("TaskManager.Database.Models.Group", b =>
+                {
+                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("TaskManager.Database.Models.Project", b =>

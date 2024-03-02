@@ -8,14 +8,14 @@ public class Team
 {
     [Key]
     public Guid Id { get; set; }
-    public string Name { get; set; }
+    public string Name { get; set; } = string.Empty;
     [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
     public bool Deleted { get; set; }
     public FileModel Avatar { get; set; }
 
-    public User CreatedBy { get; set; }
+    public User CreatedBy { get; set; } = new User();
     // One-to-many relationship: Team -> Groups
-    public ICollection<Group> Groups { get; set; }
+    public ICollection<Group> Groups { get; set; } = new List<Group>();
 
     public Team()
     {

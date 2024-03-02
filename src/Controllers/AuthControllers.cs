@@ -6,19 +6,25 @@ using TaskManager.Schemas;
 using Microsoft.IdentityModel.Tokens;
 using TaskManager.Database;
 using Microsoft.EntityFrameworkCore;
-using TaskManager.Database.Models; 
+using TaskManager.Database.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace TaskManager.Controllers; 
 
-[Route("api/auth/[controller]")]
+[Route("api/auth/")]
 [ApiController]
 public class RegisterUserController : ControllerBase
 {
     private readonly TaskManagerContext _context;
+    private readonly IPasswordHasher<User> _passwordHasherService; 
 
-    public RegisterUserController(TaskManagerContext context)
+    public RegisterUserController(
+        TaskManagerContext context,
+        IPasswordHasher<User> passwordHasherService
+    )
     {
         _context = context;
+        _passwordHasherService = passwordHasherService;
     }
 
     [HttpPost("register")]
@@ -28,48 +34,46 @@ public class RegisterUserController : ControllerBase
         if (user != null) {
             return NotFound(new JsonResult("Такой пользватель уже существуют"));
         }
-        User userCreate = new User
+        User userCreate = new User()
         {
             FullName = model.FullName,
-            Email = model.Email
-        }; 
+            Email = model.Email,
+        };
+        userCreate.HashedPassword = _passwordHasherService.HashPassword(userCreate, model.Password); 
 
         await _context.Users.AddAsync(userCreate);
         await _context.SaveChangesAsync(); 
 
-        return new JsonResult(user);
+        return new JsonResult(userCreate);
     }
 }
 
-[Route("api/auth/[controller]")]
+[Route("api/auth/")]
 [ApiController]
 public class LoginUserController : ControllerBase
 {
-    private readonly IConfiguration _configuration;
+    private readonly TaskManagerContext _context;
+    private readonly IConfiguration _configuration; 
 
-    public LoginUserController(IConfiguration configuration)
+    public LoginUserController(TaskManagerContext context, IConfiguration configuration)
     {
-        _configuration = configuration;
+        _context = context;
+        _configuration = configuration; 
     }
 
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginUserSchema model)
     {
-        // Здесь ваша логика аутентификации пользователя
-        // Пример: проверка логина и пароля в базе данных
-
-        // Проверка логина и пароля (пример)
-        if (model.Email == "admin" && model.Password == "admin")
+        var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == model.Email);
+        if (user == null)
         {
-            // Генерируем JWT токен
-            var token = GenerateJwtToken(model.Email);
-
-            // Возвращаем Bearer JWT токен
-            return Ok(new { token });
+            return Unauthorized(); 
         }
+        // Генерируем JWT токен
+        var token = GenerateJwtToken(model.Email);
 
-        // Если аутентификация не удалась, возвращаем Unauthorized
-        return Unauthorized();
+        // Возвращаем Bearer JWT токен
+        return Ok(new { token });
     }
 
     private string GenerateJwtToken(string username)
