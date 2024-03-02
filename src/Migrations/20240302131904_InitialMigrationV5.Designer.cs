@@ -12,8 +12,8 @@ using TaskManager.Database;
 namespace TaskManager.Migrations
 {
     [DbContext(typeof(TaskManagerContext))]
-    [Migration("20240302085136_InitialMigration")]
-    partial class InitialMigration
+    [Migration("20240302131904_InitialMigrationV5")]
+    partial class InitialMigrationV5
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -108,7 +108,7 @@ namespace TaskManager.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("OwnerId")
+                    b.Property<Guid?>("OwnerId")
                         .HasColumnType("uuid");
 
                     b.Property<int>("Role")
@@ -286,7 +286,7 @@ namespace TaskManager.Migrations
                     b.ToTable("Teams");
                 });
 
-            modelBuilder.Entity("TaskManager.Database.Models.User", b =>
+            modelBuilder.Entity("TaskManager.Database.Models.UserModel", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -398,11 +398,9 @@ namespace TaskManager.Migrations
 
             modelBuilder.Entity("TaskManager.Database.Models.Group", b =>
                 {
-                    b.HasOne("TaskManager.Database.Models.User", "Owner")
+                    b.HasOne("TaskManager.Database.Models.UserModel", "Owner")
                         .WithMany()
-                        .HasForeignKey("OwnerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("OwnerId");
 
                     b.HasOne("TaskManager.Database.Models.Team", "Team")
                         .WithMany("Groups")
@@ -417,7 +415,7 @@ namespace TaskManager.Migrations
 
             modelBuilder.Entity("TaskManager.Database.Models.Project", b =>
                 {
-                    b.HasOne("TaskManager.Database.Models.User", "CreatedBy")
+                    b.HasOne("TaskManager.Database.Models.UserModel", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -440,11 +438,11 @@ namespace TaskManager.Migrations
 
             modelBuilder.Entity("TaskManager.Database.Models.TaskModel", b =>
                 {
-                    b.HasOne("TaskManager.Database.Models.User", "AssignedUser")
+                    b.HasOne("TaskManager.Database.Models.UserModel", "AssignedUser")
                         .WithMany()
                         .HasForeignKey("AssignedUserId");
 
-                    b.HasOne("TaskManager.Database.Models.User", "CreatedBy")
+                    b.HasOne("TaskManager.Database.Models.UserModel", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -482,7 +480,7 @@ namespace TaskManager.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TaskManager.Database.Models.User", "CreatedBy")
+                    b.HasOne("TaskManager.Database.Models.UserModel", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -493,7 +491,7 @@ namespace TaskManager.Migrations
                     b.Navigation("CreatedBy");
                 });
 
-            modelBuilder.Entity("TaskManager.Database.Models.User", b =>
+            modelBuilder.Entity("TaskManager.Database.Models.UserModel", b =>
                 {
                     b.HasOne("TaskManager.Database.Models.FileModel", "Avatar")
                         .WithMany()
@@ -524,7 +522,7 @@ namespace TaskManager.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TaskManager.Database.Models.User", "User")
+                    b.HasOne("TaskManager.Database.Models.UserModel", "User")
                         .WithMany("WorkVisits")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -572,7 +570,7 @@ namespace TaskManager.Migrations
                     b.Navigation("Groups");
                 });
 
-            modelBuilder.Entity("TaskManager.Database.Models.User", b =>
+            modelBuilder.Entity("TaskManager.Database.Models.UserModel", b =>
                 {
                     b.Navigation("WorkVisits");
                 });
