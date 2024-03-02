@@ -36,7 +36,7 @@ namespace TaskManager.Controllers
         {
             var users = await _context.Users.ToListAsync();
 
-            return users; 
+            return users;
         }
 
         [HttpGet("{id}", Name = "get-user")]
@@ -47,10 +47,10 @@ namespace TaskManager.Controllers
                 x => x.Id == id);
             if (user == null)
             {
-                return NotFound(); 
+                return NotFound(new JsonResult("Not found") { StatusCode = 400 });
             }
 
-            return Ok(user); 
+            return Ok(user);
         }
 
         [HttpPatch("{id}", Name = "update-user")]
@@ -58,29 +58,43 @@ namespace TaskManager.Controllers
         public async Task<IActionResult> UpdateUser(Guid id, [FromBody] UpdateUserScheme model)
         {
             var user = await _context.Users.SingleOrDefaultAsync(
-                x => x.Id== id);
+                x => x.Id == id);
             if (user == null)
             {
-                return NotFound();
+                return NotFound(new JsonResult("Not found") { StatusCode = 400 });
             }
 
             if (!string.IsNullOrEmpty(model.FullName))
             {
                 user.FullName = model.FullName;
-            } 
+            }
             if (!string.IsNullOrEmpty(model.Email))
             {
-                user.Email = model.Email; 
-            } 
+                user.Email = model.Email;
+            }
             if (!string.IsNullOrEmpty(model.Password))
             {
-                user.HashedPassword = _passwordHasherService.HashPassword(user, model.Password); 
+                user.HashedPassword = _passwordHasherService.HashPassword(user, model.Password);
             }
 
             _context.Update(user);
             await _context.SaveChangesAsync();
 
-            return Ok(new JsonResult(user)); 
+            return Ok(new JsonResult(user));
+        }
+
+        [HttpGet("me", Name = "get-me")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<ActionResult<UserModel>> GetMe()
+        {
+            var user = await _context.Users.SingleOrDefaultAsync(
+                x => x.Email == User.Identity.Name);
+            if (user == null)
+            {
+                return NotFound(new JsonResult("Not found") { StatusCode = 400});
+            }
+
+            return Ok(new JsonResult(user));
         }
     }
-}
+} 

@@ -23,7 +23,7 @@ namespace TaskManager.Controllers
             _context = context;
         }
 
-        [HttpPost(Name = "get-tasks")]
+        [HttpGet(Name = "get-tasks")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<ActionResult<List<TaskModel>>> GetTasks([FromQuery] GetTasksScheme model)
         {

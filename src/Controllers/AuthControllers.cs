@@ -41,7 +41,7 @@ namespace TaskManager.Controllers
             var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == model.Email || x.FullName == model.FullName);
             if (user != null)
             {
-                return NotFound("Такой пользователь уже существует");
+                return BadRequest(new JsonResult("Такой пользователь уже существует"));
             }
 
             var userCreate = new UserModel()

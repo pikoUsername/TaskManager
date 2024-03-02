@@ -32,52 +32,65 @@ namespace TaskManager.Controllers
                 teams = await _context.Teams.ToListAsync();
             } else
             {
-                teams = await _context.Groups
-                    .Where(g => g.Users.Any(u => u.Id == model.UserId))
-                    .Select(g => g.Team)
-                    .ToListAsync();
+                // TODO: make users specific get teams 
+                teams = await _context.Teams.ToListAsync();
             }
 
             return Ok(new JsonResult(teams));  
         }
+
         [HttpPost(Name = "create-team")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> CreateTeam([FromBody] CreateTeamSchema model)
         {
+            var ownerUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == User.Identity.Name);
+            if (ownerUser == null)
+            {
+                return NotFound(new JsonResult("Not found") { StatusCode = 400 });
+            }
             Team team = new Team()
             {
                 Name = model.Name,
+                Groups = new List<Group>(), 
+                CreatedBy = ownerUser,
             };
+
             Group defaultGroup = new Group()
             {
-                Team = team, 
+                Owner = ownerUser, 
                 Role = GroupRoles.employee,
-                Users = new List<UserModel>(),
+                Users = new List<UserModel>()
             };
-            foreach (var userId in model.UserIds) {
-                var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
-                if (user == null)
-                {
-                    continue; 
-                }
-                defaultGroup.Users.Add(user);
-            }
-            var ownerUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == User.Identity.Name); 
 
             Group ownerGroup = new Group()
             {
-                Team = team,
                 Role = GroupRoles.employee,
-            }; 
+                Owner = ownerUser,
+                Users = new List<UserModel>()
+            };
+            foreach (var userId in model.UserIds)
+            {
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+                if (user != null)
+                {
+                    defaultGroup.Users.Add(user);
+                }
+            }
+            await _context.Groups.AddAsync(defaultGroup);
+            await _context.Groups.AddAsync(ownerGroup);
+
+            await _context.Teams.AddAsync(team);
+            await _context.SaveChangesAsync();
 
             team.Groups.Add(defaultGroup);
-            team.Groups.Add(ownerGroup); 
+            team.Groups.Add(ownerGroup);
 
-            _context.Teams.Add(team); 
-            await _context.SaveChangesAsync();
+            _context.Teams.Update(team);
+            await _context.SaveChangesAsync(); 
 
             return Ok(team); 
         }
+
         [HttpGet("{id}", Name = "get-team")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetTeam(Guid id)
