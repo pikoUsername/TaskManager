@@ -11,7 +11,7 @@ using TaskManager.Schemas;
 namespace TaskManager.Controllers
 {
     [SwaggerTag("team")]
-    [Route("api/[controller]")]
+    [Route("api/team/")]
     [ApiController]
     public class TeamControllers : ControllerBase
     {
@@ -23,7 +23,7 @@ namespace TaskManager.Controllers
         }
 
         [HttpGet(Name = "get-teams-all")]
-        [Authorize]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetTeamsAll([FromQuery] GetTeamsSchema model)
         {
             List<Team> teams;
@@ -41,7 +41,7 @@ namespace TaskManager.Controllers
             return Ok(new JsonResult(teams));  
         }
         [HttpPost(Name = "create-team")]
-        [Authorize]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> CreateTeam([FromBody] CreateTeamSchema model)
         {
             Team team = new Team()
@@ -63,18 +63,12 @@ namespace TaskManager.Controllers
                 defaultGroup.Users.Add(user);
             }
             var ownerUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == User.Identity.Name); 
-            if (ownerUser == null)
-            {
-                return BadRequest("Not found"); 
-            }
 
             Group ownerGroup = new Group()
             {
                 Team = team,
                 Role = GroupRoles.employee,
-                Users = new List<UserModel>(),
-            };
-            ownerGroup.Users.Add(ownerUser); 
+            }; 
 
             team.Groups.Add(defaultGroup);
             team.Groups.Add(ownerGroup); 
@@ -82,6 +76,13 @@ namespace TaskManager.Controllers
             _context.Teams.Add(team); 
             await _context.SaveChangesAsync();
 
+            return Ok(team); 
+        }
+        [HttpGet("{id}", Name = "get-team")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetTeam(Guid id)
+        {
+            var team = await _context.Groups.FirstOrDefaultAsync(x => x.Id == id); 
             return Ok(new JsonResult(team));
         }
     }

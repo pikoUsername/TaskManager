@@ -9,13 +9,12 @@ public class Team
     [Key]
     public Guid Id { get; set; }
     public string Name { get; set; } = string.Empty;
-    [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-    public bool Deleted { get; set; }
-    public FileModel Avatar { get; set; }
+    public bool Deleted { get; set; } = false; 
+    public FileModel? Avatar { get; set; }
 
-    public UserModel CreatedBy { get; set; } = new UserModel();
+    public UserModel CreatedBy { get; set; }
     // One-to-many relationship: Team -> Groups
-    public ICollection<Group> Groups { get; set; } = new List<Group>();
+    public ICollection<Group> Groups { get; set; }
 
     public Team()
     {

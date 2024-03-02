@@ -9,92 +9,85 @@ using Microsoft.EntityFrameworkCore;
 using TaskManager.Database.Models;
 using Microsoft.AspNetCore.Identity;
 using Swashbuckle.AspNetCore.Annotations;
+using Microsoft.Extensions.Configuration;
+using System;
+using System.Threading.Tasks;
 
-namespace TaskManager.Controllers;
-
-[SwaggerTag("auth")]
-[Route("api/auth/")]
-[ApiController]
-public class RegisterUserController : ControllerBase
+namespace TaskManager.Controllers
 {
-    private readonly TaskManagerContext _context;
-    private readonly IPasswordHasher<UserModel> _passwordHasherService; 
-
-    public RegisterUserController(
-        TaskManagerContext context,
-        IPasswordHasher<UserModel> passwordHasherService
-    )
+    [SwaggerTag("auth")]
+    [Route("api/auth/")]
+    [ApiController]
+    public class RegisterUserController : ControllerBase
     {
-        _context = context;
-        _passwordHasherService = passwordHasherService;
-    }
+        private readonly TaskManagerContext _context;
+        private readonly IPasswordHasher<UserModel> _passwordHasherService;
+        private readonly IConfiguration _configuration;
 
-    [HttpPost("register")]
-    public async Task<IActionResult> RegisterUser([FromBody] RegisterUserSchema model)
-    {
-        var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == model.Email || x.FullName == model.FullName);
-        if (user != null) {
-            return NotFound(new JsonResult("Такой пользватель уже существуют"));
-        }
-        UserModel userCreate = new UserModel()
+        public RegisterUserController(
+            TaskManagerContext context,
+            IPasswordHasher<UserModel> passwordHasherService,
+            IConfiguration configuration
+        )
         {
-            FullName = model.FullName,
-            Email = model.Email,
-        };
-        userCreate.HashedPassword = _passwordHasherService.HashPassword(userCreate, model.Password); 
+            _context = context;
+            _passwordHasherService = passwordHasherService;
+            _configuration = configuration;
+        }
 
-        await _context.Users.AddAsync(userCreate);
-        await _context.SaveChangesAsync(); 
+        [HttpPost("register")]
+        public async Task<ActionResult<UserModel>> RegisterUser([FromBody] RegisterUserSchema model)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == model.Email || x.FullName == model.FullName);
+            if (user != null)
+            {
+                return NotFound("Такой пользователь уже существует");
+            }
 
-        return new JsonResult(userCreate);
+            var userCreate = new UserModel()
+            {
+                FullName = model.FullName,
+                Email = model.Email,
+            };
+            userCreate.HashedPassword = _passwordHasherService.HashPassword(userCreate, model.Password);
+
+            await _context.Users.AddAsync(userCreate);
+            await _context.SaveChangesAsync();
+
+            return Ok(userCreate);
+        }
+
+        [HttpPost("login")]
+        public async Task<ActionResult<LoginResponseSchema>> Login([FromBody] LoginUserSchema model)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == model.Email);
+            if (user == null)
+            {
+                return Unauthorized();
+            }
+
+            // Генерируем JWT токен
+            var token = GenerateJwtToken(model.Email);
+            var expiresIn = _configuration["Jwt:ExpireMinutes"];
+
+            // Возвращаем Bearer JWT токен
+            return Ok(new LoginResponseSchema { AccessToken = token, ExpiresIn = expiresIn });
+        }
+
+        private string GenerateJwtToken(string username)
+        {
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:SecretKey"]));
+            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                issuer: _configuration["Jwt:Issuer"],
+                audience: _configuration["Jwt:Audience"],
+                claims: new[] { new Claim(ClaimTypes.Name, username) },
+                expires: DateTime.Now.AddMinutes(Convert.ToDouble(_configuration["Jwt:ExpireMinutes"])),
+                signingCredentials: credentials
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
     }
 }
-
-[SwaggerTag("auth")]
-[Route("api/auth/")]
-[ApiController]
-public class LoginUserController : ControllerBase
-{
-    private readonly TaskManagerContext _context;
-    private readonly IConfiguration _configuration; 
-
-    public LoginUserController(TaskManagerContext context, IConfiguration configuration)
-    {
-        _context = context;
-        _configuration = configuration; 
-    }
-
-    [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] LoginUserSchema model)
-    {
-        var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == model.Email);
-        if (user == null)
-        {
-            return Unauthorized(); 
-        }
-        // Генерируем JWT токен
-        var token = GenerateJwtToken(model.Email);
-
-        // Возвращаем Bearer JWT токен
-        return Ok(new { token });
-    }
-
-    private string GenerateJwtToken(string username)
-    {
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:SecretKey"]));
-        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-        var token = new JwtSecurityToken(
-            issuer: _configuration["Jwt:Issuer"],
-            audience: _configuration["Jwt:Audience"],
-            claims: new[] { new Claim(ClaimTypes.Name, username) },
-            expires: DateTime.Now.AddMinutes(Convert.ToDouble(_configuration["Jwt:ExpireMinutes"])),
-            signingCredentials: credentials
-        );
-
-        return new JwtSecurityTokenHandler().WriteToken(token);
-    }
-}
-
-
-

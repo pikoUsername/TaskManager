@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -15,7 +16,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<TaskManagerContext>(options => 
 {
-    options.EnableDetailedErrors(true); 
+    options.EnableDetailedErrors(true);
     options.UseNpgsql(builder.Configuration["ConnectionString"]); 
 });
 
@@ -28,6 +29,31 @@ builder.Services.AddSwaggerGen(options =>
 {
     var info = new OpenApiInfo { Title = "My API", Version = "v1" };
     options.SwaggerDoc(name: "v1", info: info);
+    options.EnableAnnotations();
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        In = ParameterLocation.Header,
+        Description = "Please enter a valid JWT token",
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "Bearer",
+        BearerFormat = "JWT"
+    });
+
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] {}
+        }
+    });
 });
 builder.Services.AddAuthentication(options =>
 {
@@ -52,6 +78,7 @@ builder.Services.AddCors(option => option.AddPolicy("TaskManger", builder =>
 {
     builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
 }));
+builder.Services.AddMemoryCache(); 
 
 builder.Services.AddControllers();
 
@@ -62,14 +89,18 @@ if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage(); 
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(options =>
+    {
+        options.DefaultModelsExpandDepth(-1);
+    });
 }
-
+app.UseStaticFiles();
 
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
 app.UseAuthentication(); 
+
 
 app.MapControllers();
 

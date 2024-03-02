@@ -13,9 +13,9 @@ public class Project
 
     public ICollection<TaskType>? TaskTypes { get; set; }
     // Many-to-one relationship: Project -> Team
-    public Team? Team { get; set; } = new Team();
+    public Team? Team { get; set; }
     public ICollection<UserModel> Users { get; set; }
-    public UserModel CreatedBy { get; set; } = new UserModel();
+    public UserModel CreatedBy { get; set; } 
 
     public Project()
     {

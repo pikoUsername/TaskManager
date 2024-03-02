@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Reflection.Emit;
 using System.Reflection.Metadata;
 using TaskManager.Database.Models; 
 
@@ -22,6 +23,7 @@ public class TaskManagerContext : DbContext
     public TaskManagerContext(DbContextOptions<TaskManagerContext> options)
         : base(options)
     {
+        this.ChangeTracker.LazyLoadingEnabled = true;
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -37,6 +39,7 @@ public class TaskManagerContext : DbContext
             .HasIndex(u => u.FullName)
             .IsUnique();
         builder.Entity<Comment>(c =>
-                c.Property(p => p.CreatedAt).HasDefaultValueSql("NOW()")); 
+                c.Property(p => p.CreatedAt).HasDefaultValueSql("NOW()"));
+
     }
 } 

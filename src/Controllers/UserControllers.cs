@@ -31,7 +31,7 @@ namespace TaskManager.Controllers
 
         // GET: api/<ValuesController>
         [HttpGet(Name = "get-users")]
-        [Authorize]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IEnumerable<UserModel>> GetUsers()
         {
             var users = await _context.Users.ToListAsync();
@@ -40,7 +40,7 @@ namespace TaskManager.Controllers
         }
 
         [HttpGet("{id}", Name = "get-user")]
-        [Authorize]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetUser(Guid id)
         {
             var user = await _context.Users.SingleOrDefaultAsync(
@@ -54,7 +54,7 @@ namespace TaskManager.Controllers
         }
 
         [HttpPatch("{id}", Name = "update-user")]
-        [Authorize]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> UpdateUser(Guid id, [FromBody] UpdateUserScheme model)
         {
             var user = await _context.Users.SingleOrDefaultAsync(

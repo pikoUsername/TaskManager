@@ -5,8 +5,10 @@ using Swashbuckle.AspNetCore.Annotations;
 using TaskManager.Database;
 using TaskManager.Database.Models;
 using TaskManager.Schemas;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace TaskManager.Controllers
 {
@@ -23,13 +25,13 @@ namespace TaskManager.Controllers
         }
 
         [HttpPost(Name = "create-comment")]
-        [Authorize]
-        public async Task<IActionResult> CreateComment([FromBody] CreateCommentScheme model)
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<ActionResult<Comment>> CreateComment([FromBody] CreateCommentScheme model)
         {
-            var task = await _context.Tasks.FirstOrDefaultAsync(x => x.Id == model.TaskId); 
+            var task = await _context.Tasks.FirstOrDefaultAsync(x => x.Id == model.TaskId);
             if (task == null)
             {
-                return NotFound("Задача не найдена"); 
+                return NotFound(new JsonResult("Задача не найдена") { StatusCode = 404 });
             }
 
             var comment = new Comment()
@@ -40,12 +42,12 @@ namespace TaskManager.Controllers
             _context.Comments.Add(comment);
             await _context.SaveChangesAsync();
 
-            return Ok(new JsonResult(comment)); 
+            return CreatedAtAction(nameof(CreateComment), comment);
         }
 
         [HttpGet(Name = "get-comments")]
-        [Authorize]
-        public async Task<IActionResult> GetComments([FromBody] GetCommentsScheme model)
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<ActionResult<List<Comment>>> GetComments([FromQuery] GetCommentsScheme model)
         {
             var comments = await _context.Comments
                 .Where(x => x.Task.Id == model.TaskId)
@@ -54,22 +56,22 @@ namespace TaskManager.Controllers
                 .Take(model.End)
                 .ToListAsync();
 
-            return Ok(new JsonResult(comments)); 
+            return Ok(comments);
         }
 
         [HttpDelete("{id}", Name = "delete-comment")]
-        [Authorize]
-        public async Task<IActionResult> DeleteComment(Guid id)
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<ActionResult<Comment>> DeleteComment(Guid id)
         {
             var comment = await _context.Comments.FirstOrDefaultAsync(x => x.Id == id);
             if (comment == null)
             {
-                return NotFound("Задача не найдена");
+                return NotFound(new JsonResult("Комментарий не найден") { StatusCode = 404 });
             }
             _context.Remove(comment);
-            await _context.SaveChangesAsync(); 
+            await _context.SaveChangesAsync();
 
-            return Ok(new JsonResult(comment));
+            return Ok(comment);
         }
     }
 }

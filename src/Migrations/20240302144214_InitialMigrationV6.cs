@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace TaskManager.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialMigrationV5 : Migration
+    public partial class InitialMigrationV6 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -122,7 +122,7 @@ namespace TaskManager.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
-                    ProjectId = table.Column<Guid>(type: "uuid", nullable: false)
+                    ProjectId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -131,8 +131,7 @@ namespace TaskManager.Migrations
                         name: "FK_TaskTypes_Projects_ProjectId",
                         column: x => x.ProjectId,
                         principalTable: "Projects",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -219,7 +218,7 @@ namespace TaskManager.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
                     Deleted = table.Column<bool>(type: "boolean", nullable: false),
-                    AvatarId = table.Column<Guid>(type: "uuid", nullable: false),
+                    AvatarId = table.Column<Guid>(type: "uuid", nullable: true),
                     CreatedById = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
@@ -229,8 +228,7 @@ namespace TaskManager.Migrations
                         name: "FK_Teams_FileModels_AvatarId",
                         column: x => x.AvatarId,
                         principalTable: "FileModels",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Teams_Users_CreatedById",
                         column: x => x.CreatedById,

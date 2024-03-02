@@ -5,8 +5,9 @@ using Swashbuckle.AspNetCore.Annotations;
 using TaskManager.Database;
 using TaskManager.Database.Models;
 using TaskManager.Schemas;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace TaskManager.Controllers
 {
@@ -17,14 +18,14 @@ namespace TaskManager.Controllers
     {
         private readonly TaskManagerContext _context;
 
-        public TaskControllers(TaskManagerContext context, IConfiguration configuration)
+        public TaskControllers(TaskManagerContext context)
         {
             _context = context;
         }
 
         [HttpPost(Name = "get-tasks")]
-        [Authorize]
-        public async Task<IActionResult> GetTasks([FromQuery] GetTasksScheme model)
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<ActionResult<List<TaskModel>>> GetTasks([FromQuery] GetTasksScheme model)
         {
             List<TaskModel> tasks;
             if (model.UserTasks)
@@ -44,46 +45,46 @@ namespace TaskManager.Controllers
                         x.Project.Id == model.ProjectId
                     )
                     .ToListAsync();
-            } 
-            return Ok(new JsonResult(tasks)); 
+            }
+            return Ok(tasks);
         }
 
         [HttpPost("{id}", Name = "assign-user-to-task")]
-        [Authorize]
-        public async Task<IActionResult> AssignUserToTask(Guid id, [FromBody] AssignUserScheme model)
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<ActionResult<TaskModel>> AssignUserToTask(Guid id, [FromBody] AssignUserScheme model)
         {
-            var task = await _context.Tasks.FirstOrDefaultAsync(x => x.Id == id); 
+            var task = await _context.Tasks.FirstOrDefaultAsync(x => x.Id == id);
             if (task == null)
             {
-                return NotFound("Задача не найдена");
+                return NotFound(new JsonResult("Задача не найдена") { StatusCode = 404 });
             }
 
             var selectedUser = await _context.Users.FirstOrDefaultAsync(x => x.Id == model.UserId);
             if (selectedUser == null)
             {
-                return NotFound("Пользватель не найден");
+                return NotFound(new JsonResult("Пользователь не найден") { StatusCode = 404 });
             }
-            task.AssignedUser = selectedUser; 
+            task.AssignedUser = selectedUser;
             _context.Update(task);
-            await _context.SaveChangesAsync(); 
+            await _context.SaveChangesAsync();
 
-            return Ok(new JsonResult(task)); 
+            return Ok(task);
         }
 
         [HttpPatch("{id}", Name = "update-task")]
-        [Authorize]
-        public async Task<IActionResult> UpdateTask(Guid id, [FromBody] UpdateTaskScheme model)
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<ActionResult<TaskModel>> UpdateTask(Guid id, [FromBody] UpdateTaskScheme model)
         {
             var task = await _context.Tasks.FirstOrDefaultAsync(x => x.Id == id);
             if (task == null)
             {
-                return NotFound("Задача не найдена");
+                return NotFound(new JsonResult("Задача не найдена") { StatusCode = 404 });
             }
 
             if (model.Title != null)
             {
-                task.Title = model.Title; 
-            } 
+                task.Title = model.Title;
+            }
             if (model.Description != null)
             {
                 task.Description = model.Description;
@@ -92,22 +93,22 @@ namespace TaskManager.Controllers
             _context.Update(task);
             await _context.SaveChangesAsync();
 
-            return Ok(new JsonResult(task)); 
+            return Ok(task);
         }
 
         [HttpDelete("{id}", Name = "delete-task")]
-        [Authorize]
-        public async Task<IActionResult> DeleteTask(Guid id)
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<ActionResult<TaskModel>> DeleteTask(Guid id)
         {
             var task = await _context.Tasks.FirstOrDefaultAsync(x => x.Id == id);
             if (task == null)
             {
-                return NotFound("Задача не найдена");
+                return NotFound(new JsonResult("Задача не найдена") { StatusCode = 404 });
             }
             _context.Remove(task);
             await _context.SaveChangesAsync();
 
-            return Ok(new JsonResult(task)); 
+            return Ok(task);
         }
     }
 }

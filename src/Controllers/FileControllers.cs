@@ -1,7 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Swashbuckle.AspNetCore.Annotations;
 using TaskManager.Database;
 using TaskManager.Database.Models;
+using System;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace TaskManager.Controllers
 {
@@ -20,7 +25,7 @@ namespace TaskManager.Controllers
         }
 
         [HttpPost("upload")]
-        public async Task<IActionResult> UploadFile(IFormFile file)
+        public async Task<ActionResult<FileModel>> UploadFile(IFormFile file)
         {
             if (file == null || file.Length == 0)
                 return BadRequest("Файл не был загружен.");
@@ -46,7 +51,7 @@ namespace TaskManager.Controllers
             _context.FileModels.Add(fileModel);
             await _context.SaveChangesAsync();
 
-            return Ok(fileModel); 
+            return Ok(fileModel);
         }
 
         [HttpGet("download/{id}")]
