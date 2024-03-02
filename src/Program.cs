@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using System.Text;
 using System.Text.Json;
 using TaskManager.Database;
@@ -23,7 +24,11 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddMvc().AddJsonOptions(c =>
             c.JsonSerializerOptions.PropertyNamingPolicy
                 = JsonNamingPolicy.CamelCase);
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    var info = new OpenApiInfo { Title = "My API", Version = "v1" };
+    options.SwaggerDoc(name: "v1", info: info);
+});
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

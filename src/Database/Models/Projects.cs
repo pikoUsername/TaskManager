@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
 
 namespace TaskManager.Database.Models; 
 
@@ -12,6 +13,12 @@ public class Project
 
     public ICollection<TaskType>? TaskTypes { get; set; }
     // Many-to-one relationship: Project -> Team
-    public Team Team { get; set; } = new Team();
-    public User CreatedBy { get; set; } = new User();  
+    public Team? Team { get; set; } = new Team();
+    public ICollection<User> Users { get; set; }
+    public User CreatedBy { get; set; } = new User();
+
+    public Project()
+    {
+        Users = new List<User>();
+    }
 }

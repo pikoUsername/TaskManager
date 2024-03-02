@@ -16,6 +16,7 @@ public class TaskModel
 
     // Many-to-one relationships: Task -> User (Assigned_User, Created_By)
     public User? AssignedUser { get; set; }
+    public Project Project { get; set; } = new Project();
 
     // Many-to-many relationship: Task <-> TaskTags
     public User CreatedBy { get; set; } = new User();   

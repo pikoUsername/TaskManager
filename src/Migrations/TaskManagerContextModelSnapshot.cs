@@ -28,6 +28,11 @@ namespace TaskManager.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime?>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("NOW()");
+
                     b.Property<Guid>("TaskId")
                         .HasColumnType("uuid");
 
@@ -157,7 +162,7 @@ namespace TaskManager.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid>("TeamId")
+                    b.Property<Guid?>("TeamId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
@@ -190,6 +195,9 @@ namespace TaskManager.Migrations
                     b.Property<DateTime>("EndsAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid");
+
                     b.Property<DateTime>("StartedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -205,6 +213,8 @@ namespace TaskManager.Migrations
                     b.HasIndex("AssignedUserId");
 
                     b.HasIndex("CreatedById");
+
+                    b.HasIndex("ProjectId");
 
                     b.ToTable("Tasks");
                 });
@@ -302,6 +312,9 @@ namespace TaskManager.Migrations
                     b.Property<string>("HashedPassword")
                         .HasColumnType("text");
 
+                    b.Property<Guid?>("ProjectId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("Telegram")
                         .HasColumnType("text");
 
@@ -321,6 +334,8 @@ namespace TaskManager.Migrations
                         .IsUnique();
 
                     b.HasIndex("GroupId");
+
+                    b.HasIndex("ProjectId");
 
                     b.ToTable("Users");
                 });
@@ -411,9 +426,7 @@ namespace TaskManager.Migrations
 
                     b.HasOne("TaskManager.Database.Models.Team", "Team")
                         .WithMany()
-                        .HasForeignKey("TeamId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("TeamId");
 
                     b.Navigation("CreatedBy");
 
@@ -434,9 +447,17 @@ namespace TaskManager.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("TaskManager.Database.Models.Project", "Project")
+                        .WithMany()
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("AssignedUser");
 
                     b.Navigation("CreatedBy");
+
+                    b.Navigation("Project");
                 });
 
             modelBuilder.Entity("TaskManager.Database.Models.TaskType", b =>
@@ -482,6 +503,10 @@ namespace TaskManager.Migrations
                     b.HasOne("TaskManager.Database.Models.Group", null)
                         .WithMany("Users")
                         .HasForeignKey("GroupId");
+
+                    b.HasOne("TaskManager.Database.Models.Project", null)
+                        .WithMany("Users")
+                        .HasForeignKey("ProjectId");
 
                     b.Navigation("Avatar");
 
@@ -535,6 +560,8 @@ namespace TaskManager.Migrations
             modelBuilder.Entity("TaskManager.Database.Models.Project", b =>
                 {
                     b.Navigation("TaskTypes");
+
+                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("TaskManager.Database.Models.Team", b =>
