@@ -6,7 +6,7 @@ namespace TaskManager.Database;
 
 public class TaskManagerContext : DbContext
 {
-    public DbSet<User> Users { get; set; }
+    public DbSet<UserModel> Users { get; set; }
     public DbSet<Team> Teams { get; set; }
     public DbSet<Group> Groups { get; set; }
     public DbSet<Project> Projects { get; set; }
@@ -30,10 +30,10 @@ public class TaskManagerContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
-        builder.Entity<User>()
+        builder.Entity<UserModel>()
             .HasIndex(u => u.Email)
             .IsUnique();
-        builder.Entity<User>()
+        builder.Entity<UserModel>()
             .HasIndex(u => u.FullName)
             .IsUnique();
         builder.Entity<Comment>(c =>

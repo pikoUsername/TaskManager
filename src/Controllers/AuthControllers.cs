@@ -18,11 +18,11 @@ namespace TaskManager.Controllers;
 public class RegisterUserController : ControllerBase
 {
     private readonly TaskManagerContext _context;
-    private readonly IPasswordHasher<User> _passwordHasherService; 
+    private readonly IPasswordHasher<UserModel> _passwordHasherService; 
 
     public RegisterUserController(
         TaskManagerContext context,
-        IPasswordHasher<User> passwordHasherService
+        IPasswordHasher<UserModel> passwordHasherService
     )
     {
         _context = context;
@@ -36,7 +36,7 @@ public class RegisterUserController : ControllerBase
         if (user != null) {
             return NotFound(new JsonResult("Такой пользватель уже существуют"));
         }
-        User userCreate = new User()
+        UserModel userCreate = new UserModel()
         {
             FullName = model.FullName,
             Email = model.Email,

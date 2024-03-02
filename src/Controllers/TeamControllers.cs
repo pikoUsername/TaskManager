@@ -1,6 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Swashbuckle.AspNetCore.Annotations;
 using TaskManager.Database;
+using TaskManager.Database.Models;
+using TaskManager.Schemas;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -18,36 +22,67 @@ namespace TaskManager.Controllers
             _context = context;
         }
 
-        // GET: api/<ValuesController>
-        [HttpGet]
-        public IEnumerable<string> Get()
+        [HttpGet(Name = "get-teams-all")]
+        [Authorize]
+        public async Task<IActionResult> GetTeamsAll([FromQuery] GetTeamsSchema model)
         {
-            return new string[] { "value1", "value2" };
-        }
+            List<Team> teams;
+            if (model.UserId == null)
+            {
+                teams = await _context.Teams.ToListAsync();
+            } else
+            {
+                teams = await _context.Groups
+                    .Where(g => g.Users.Any(u => u.Id == model.UserId))
+                    .Select(g => g.Team)
+                    .ToListAsync();
+            }
 
-        // GET api/<ValuesController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
+            return Ok(new JsonResult(teams));  
         }
-
-        // POST api/<ValuesController>
-        [HttpPost]
-        public void Post([FromBody] string value)
+        [HttpPost(Name = "create-team")]
+        [Authorize]
+        public async Task<IActionResult> CreateTeam([FromBody] CreateTeamSchema model)
         {
-        }
+            Team team = new Team()
+            {
+                Name = model.Name,
+            };
+            Group defaultGroup = new Group()
+            {
+                Team = team, 
+                Role = GroupRoles.employee,
+                Users = new List<UserModel>(),
+            };
+            foreach (var userId in model.UserIds) {
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+                if (user == null)
+                {
+                    continue; 
+                }
+                defaultGroup.Users.Add(user);
+            }
+            var ownerUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == User.Identity.Name); 
+            if (ownerUser == null)
+            {
+                return BadRequest("Not found"); 
+            }
 
-        // PUT api/<ValuesController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
+            Group ownerGroup = new Group()
+            {
+                Team = team,
+                Role = GroupRoles.employee,
+                Users = new List<UserModel>(),
+            };
+            ownerGroup.Users.Add(ownerUser); 
 
-        // DELETE api/<ValuesController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
+            team.Groups.Add(defaultGroup);
+            team.Groups.Add(ownerGroup); 
+
+            _context.Teams.Add(team); 
+            await _context.SaveChangesAsync();
+
+            return Ok(new JsonResult(team));
         }
     }
 }

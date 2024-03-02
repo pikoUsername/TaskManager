@@ -7,8 +7,8 @@ public class Group
     [Key]
     public Guid Id { get; set; }
     public GroupRoles Role { get; set; }
-    public ICollection<User> Users { get; set; } = new List<User>();
-    public User Owner { get; set; } = new User();
+    public ICollection<UserModel> Users { get; set; } = new List<UserModel>();
+    public UserModel? Owner { get; set; } = new UserModel();
     // Many-to-one relationship: Group -> Team
     public Team Team { get; set; } = new Team();
 }

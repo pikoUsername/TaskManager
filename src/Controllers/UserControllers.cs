@@ -18,11 +18,11 @@ namespace TaskManager.Controllers
     public class UserControllers : ControllerBase
     {
         private readonly TaskManagerContext _context;
-        private readonly IPasswordHasher<User> _passwordHasherService;
+        private readonly IPasswordHasher<UserModel> _passwordHasherService;
 
         public UserControllers(
             TaskManagerContext context,
-            IPasswordHasher<User> passwordHasherService
+            IPasswordHasher<UserModel> passwordHasherService
         )
         {
             _context = context;
@@ -32,7 +32,7 @@ namespace TaskManager.Controllers
         // GET: api/<ValuesController>
         [HttpGet(Name = "get-users")]
         [Authorize]
-        public async Task<IEnumerable<User>> GetUsers()
+        public async Task<IEnumerable<UserModel>> GetUsers()
         {
             var users = await _context.Users.ToListAsync();
 

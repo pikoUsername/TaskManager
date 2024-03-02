@@ -15,10 +15,10 @@ public class TaskModel
     public DateTime EndsAt { get; set; }
 
     // Many-to-one relationships: Task -> User (Assigned_User, Created_By)
-    public User? AssignedUser { get; set; }
+    public UserModel? AssignedUser { get; set; }
     public Project Project { get; set; } = new Project();
 
     // Many-to-many relationship: Task <-> TaskTags
-    public User CreatedBy { get; set; } = new User();   
+    public UserModel CreatedBy { get; set; } = new UserModel();   
     public ICollection<TaskTag>? Tags { get; set; }
 }

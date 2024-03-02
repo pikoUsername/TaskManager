@@ -13,7 +13,7 @@ public class Team
     public bool Deleted { get; set; }
     public FileModel Avatar { get; set; }
 
-    public User CreatedBy { get; set; } = new User();
+    public UserModel CreatedBy { get; set; } = new UserModel();
     // One-to-many relationship: Team -> Groups
     public ICollection<Group> Groups { get; set; } = new List<Group>();
 

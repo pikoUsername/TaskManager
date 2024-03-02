@@ -5,7 +5,7 @@ using System.Reflection.Metadata;
 
 namespace TaskManager.Database.Models; 
 
-public class User
+public class UserModel
 {
     [Key]
     public Guid Id { get; set; }

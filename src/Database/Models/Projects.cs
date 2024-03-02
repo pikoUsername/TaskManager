@@ -14,11 +14,11 @@ public class Project
     public ICollection<TaskType>? TaskTypes { get; set; }
     // Many-to-one relationship: Project -> Team
     public Team? Team { get; set; } = new Team();
-    public ICollection<User> Users { get; set; }
-    public User CreatedBy { get; set; } = new User();
+    public ICollection<UserModel> Users { get; set; }
+    public UserModel CreatedBy { get; set; } = new UserModel();
 
     public Project()
     {
-        Users = new List<User>();
+        Users = new List<UserModel>();
     }
 }
