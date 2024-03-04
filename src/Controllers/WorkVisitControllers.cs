@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace TaskManager.Controllers
 {
-    [Route("api/visits/[controller]")]
+    [Route("api/visit/")]
     [ApiController]
     [SwaggerTag("work-visits")]
     public class WorkVisitControllers : ControllerBase
