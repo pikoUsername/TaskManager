@@ -38,8 +38,6 @@ public class TaskManagerContext : DbContext
         builder.Entity<UserModel>()
             .HasIndex(u => u.FullName)
             .IsUnique();
-        builder.Entity<Comment>(c =>
-                c.Property(p => p.CreatedAt).HasDefaultValueSql("NOW()"));
 
     }
 } 

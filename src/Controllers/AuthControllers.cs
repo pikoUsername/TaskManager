@@ -63,7 +63,7 @@ namespace TaskManager.Controllers
             var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == model.Email);
             if (user == null)
             {
-                return Unauthorized();
+                return BadRequest();
             }
 
             // Генерируем JWT токен
@@ -81,7 +81,7 @@ namespace TaskManager.Controllers
         private string GenerateJwtToken(string username)
         {
             var secretKey = _configuration["Jwt:SecretKey"]; 
-            if (!string.IsNullOrEmpty(secretKey))
+            if (string.IsNullOrEmpty(secretKey))
             {
                 throw new Exception("Jwt:SecretKey is empty"); 
             }

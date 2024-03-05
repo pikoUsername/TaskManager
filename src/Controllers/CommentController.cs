@@ -28,7 +28,12 @@ namespace TaskManager.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<ActionResult<Comment>> CreateComment([FromBody] CreateCommentScheme model)
         {
-            var task = await _context.Tasks.FirstOrDefaultAsync(x => x.Id == model.TaskId);
+            var task = await _context.Tasks
+                .Include(x => x.Tags)
+                .Include(x => x.Project)
+                .Include(x => x.AssignedUser)
+                .Include(x => x.CreatedBy)
+                .FirstOrDefaultAsync(x => x.Id == model.TaskId);
             if (task == null)
             {
                 return NotFound(new JsonResult("Задача не найдена") { StatusCode = 404 });
@@ -38,11 +43,12 @@ namespace TaskManager.Controllers
             {
                 Task = task,
                 Text = model.Text,
+                CreatedAt = DateTime.UtcNow
             };
             _context.Comments.Add(comment);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(CreateComment), comment);
+            return Ok(comment);
         }
 
         [HttpGet(Name = "get-comments")]

@@ -6,27 +6,11 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace TaskManager.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialMigrationV7 : Migration
+    public partial class InitialMigrationsv8 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
-                name: "DayTimetables",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    StartsAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    EndsAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Type = table.Column<int>(type: "integer", nullable: false),
-                    Day = table.Column<int>(type: "integer", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_DayTimetables", x => x.Id);
-                });
-
             migrationBuilder.CreateTable(
                 name: "FileModels",
                 columns: table => new
@@ -73,12 +57,29 @@ namespace TaskManager.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Text = table.Column<string>(type: "text", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true, defaultValueSql: "NOW()"),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
                     TaskId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Comments", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "DayTimetables",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    StartsAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    EndsAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Type = table.Column<int>(type: "integer", nullable: false),
+                    Day = table.Column<int>(type: "integer", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    TeamId = table.Column<Guid>(type: "uuid", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DayTimetables", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -295,6 +296,11 @@ namespace TaskManager.Migrations
                 column: "TaskId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_DayTimetables_TeamId",
+                table: "DayTimetables",
+                column: "TeamId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Groups_OwnerId",
                 table: "Groups",
                 column: "OwnerId");
@@ -403,6 +409,13 @@ namespace TaskManager.Migrations
                 principalTable: "Tasks",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_DayTimetables_Teams_TeamId",
+                table: "DayTimetables",
+                column: "TeamId",
+                principalTable: "Teams",
+                principalColumn: "Id");
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Groups_Teams_TeamId",

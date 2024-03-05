@@ -12,8 +12,8 @@ using TaskManager.Database;
 namespace TaskManager.Migrations
 {
     [DbContext(typeof(TaskManagerContext))]
-    [Migration("20240304121212_InitialMigrationV7")]
-    partial class InitialMigrationV7
+    [Migration("20240305113612_RemoveDefaultValue")]
+    partial class RemoveDefaultValue
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -31,10 +31,8 @@ namespace TaskManager.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime?>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("NOW()");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("TaskId")
                         .HasColumnType("uuid");
@@ -69,10 +67,15 @@ namespace TaskManager.Migrations
                     b.Property<DateTime>("StartsAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<Guid?>("TeamId")
+                        .HasColumnType("uuid");
+
                     b.Property<int>("Type")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("TeamId");
 
                     b.ToTable("DayTimetables");
                 });
@@ -399,6 +402,13 @@ namespace TaskManager.Migrations
                     b.Navigation("Task");
                 });
 
+            modelBuilder.Entity("TaskManager.Database.Models.DayTimetable", b =>
+                {
+                    b.HasOne("TaskManager.Database.Models.Team", null)
+                        .WithMany("DayTimetables")
+                        .HasForeignKey("TeamId");
+                });
+
             modelBuilder.Entity("TaskManager.Database.Models.Group", b =>
                 {
                     b.HasOne("TaskManager.Database.Models.UserModel", "Owner")
@@ -560,6 +570,8 @@ namespace TaskManager.Migrations
 
             modelBuilder.Entity("TaskManager.Database.Models.Team", b =>
                 {
+                    b.Navigation("DayTimetables");
+
                     b.Navigation("Groups");
                 });
 

@@ -139,7 +139,7 @@ namespace TaskManager.Controllers
                 return NotFound(new JsonResult("Задача не найдена") { StatusCode = 404 });
             }
             _context.Remove(task);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();  
 
             return Ok(task);
         }
