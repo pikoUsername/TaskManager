@@ -36,7 +36,7 @@ builder.Services.AddSwaggerGen(options =>
         Description = "Please enter a valid JWT token",
         Name = "Authorization",
         Type = SecuritySchemeType.Http,
-        Scheme = "Bearer",
+        Scheme = "bearer",
         BearerFormat = "JWT"
     });
 

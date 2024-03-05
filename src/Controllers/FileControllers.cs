@@ -7,6 +7,7 @@ using TaskManager.Database.Models;
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Hosting.Internal;
 
 namespace TaskManager.Controllers
 {
@@ -15,13 +16,15 @@ namespace TaskManager.Controllers
     [ApiController]
     public class FileController : ControllerBase
     {
-        private readonly IWebHostEnvironment _environment;
         private readonly TaskManagerContext _context;
+        private readonly IConfiguration _config;
+        private readonly IWebHostEnvironment _hostingEnvironment;
 
-        public FileController(IWebHostEnvironment environment, TaskManagerContext context)
+        public FileController(IConfiguration configuration, TaskManagerContext context, IWebHostEnvironment hostingEnvironment)
         {
-            _environment = environment;
+            _config = configuration;
             _context = context;
+            _hostingEnvironment = hostingEnvironment;
         }
 
         [HttpPost("upload", Name  = "upload-file")]
@@ -30,7 +33,7 @@ namespace TaskManager.Controllers
             if (file == null || file.Length == 0)
                 return BadRequest("Файл не был загружен.");
 
-            var uploadsFolder = Path.Combine(_environment.WebRootPath, "uploads");
+            var uploadsFolder = Path.Combine(_config["Files:WebPathRoot"], "uploads");
             if (!Directory.Exists(uploadsFolder))
                 Directory.CreateDirectory(uploadsFolder);
 
@@ -61,7 +64,8 @@ namespace TaskManager.Controllers
             if (fileModel == null)
                 return NotFound();
 
-            var filePath = Path.Combine(_environment.WebRootPath, "uploads", fileModel.FilePath);
+            var uploadsFolder = Path.Combine(_hostingEnvironment.ContentRootPath, "Data", "uploads");
+            var filePath = Path.Combine(uploadsFolder, fileModel.FilePath);
             if (!System.IO.File.Exists(filePath))
                 return NotFound();
 
