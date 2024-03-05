@@ -1,4 +1,6 @@
-﻿namespace TaskManager.Schemas
+﻿using TaskManager.Database.Models;
+
+namespace TaskManager.Schemas
 {
     public class GetTasksScheme
     {
@@ -16,6 +18,14 @@
     public class UpdateTaskScheme
     {
         public string Title { get; set; } = string.Empty;
-        public string Description { get; set; } = string.Empty; 
+        public string Description { get; set; } = string.Empty;
+    }
+
+    public class CreateTaskSchema {
+        public Guid ProjectId { get; set; }
+        public Guid? AssignToUserId { get; set; }
+        public string Title { get; set; } = string.Empty; 
+        public string Description { get; set; } = string.Empty;
+        public Database.Models.TaskStatus Status { get; set; }
     }
 }

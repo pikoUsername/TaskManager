@@ -48,11 +48,18 @@ namespace TaskManager.Controllers
             {
                 return NotFound(new JsonResult("Not found") { StatusCode = 400 });
             }
+
+            var timeTables = DayTimetable.CreateDefaultTimeTable();
+
+            _context.AddRange(timeTables);
+            await _context.SaveChangesAsync(); 
+
             Team team = new Team()
             {
                 Name = model.Name,
                 Groups = new List<Group>(), 
                 CreatedBy = ownerUser,
+                DayTimetables = timeTables, 
             };
 
             Group defaultGroup = new Group()
@@ -97,6 +104,39 @@ namespace TaskManager.Controllers
         {
             var team = await _context.Groups.FirstOrDefaultAsync(x => x.Id == id); 
             return Ok(new JsonResult(team));
+        }
+
+        [HttpGet("{id}/attendance", Name = "get-team-attendance")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<ActionResult<List<AttendanceUserScheme>>> GetTeamAttendance(Guid id, UserWorkTypes workType)
+        {
+            var team = await _context.Teams.FirstOrDefaultAsync();
+            if (team == null)
+                return NotFound(new JsonResult("Команда не найдена") { StatusCode = 401 });
+            var workVisits = await _context.WorkVisits
+                .Where(x => team.DayTimetables.Contains(x.DayTimetable))  
+                .ToListAsync(); 
+            var users = await _context.Users
+                .Where(x => x.WorkType == workType)
+                .Include(x => x.Avatar)
+                .ToListAsync();
+            List<AttendanceUserScheme> resultUsers = new List<AttendanceUserScheme>();
+
+            foreach (var user in users)
+            {
+                resultUsers.Add(
+                    new AttendanceUserScheme()
+                    {
+                        FullName = user.FullName, 
+                        Email = user.Email, 
+                        Blocked = user.Blocked, 
+                        Avatar = user.Avatar, 
+                        WorkType = user.WorkType, 
+                    }
+                ); 
+            }
+
+            return Ok(resultUsers); 
         }
     }
 }

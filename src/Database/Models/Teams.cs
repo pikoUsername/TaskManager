@@ -15,4 +15,5 @@ public class Team
     public UserModel CreatedBy { get; set; } = new UserModel(); 
     // One-to-many relationship: Team -> Groups
     public ICollection<Group> Groups { get; set; }
+    public ICollection<DayTimetable> DayTimetable { get; set; } = new List<DayTimetable>();
 }

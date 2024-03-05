@@ -5,9 +5,6 @@ using Swashbuckle.AspNetCore.Annotations;
 using TaskManager.Database;
 using TaskManager.Database.Models;
 using TaskManager.Schemas;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace TaskManager.Controllers
 {
@@ -47,6 +44,42 @@ namespace TaskManager.Controllers
                     .ToListAsync();
             }
             return Ok(tasks);
+        }
+
+        [HttpPost(Name = "create-task")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<ActionResult<TaskModel>> CreateTask([FromBody] CreateTaskSchema model)
+        {   
+            var project = await _context.Projects.FirstOrDefaultAsync(x => x.Id == model.ProjectId);
+            if (project == null)
+                return NotFound(new JsonResult("Проект на найден") { StatusCode = 401 });
+            var createdBy = await _context.Users.FirstOrDefaultAsync(x => x.Email == User.Identity.Name);
+            if (createdBy == null)
+                throw new Exception("Что то пошло очень не так, авториазация сломалась"); 
+
+            var task = new TaskModel()
+            {
+                Title = model.Title,
+                Description = model.Description,
+                Status = model.Status,
+                StartedAt = DateTime.UtcNow,
+                EndsAt = DateTime.UtcNow.AddDays(7),
+                Project = project, 
+                CreatedBy = createdBy,
+                Tags = new List<TaskTag>()
+            }; 
+            if (model.AssignToUserId != null)
+            {
+                var assignUser = await _context.Users.FirstOrDefaultAsync(x => x.Id == model.AssignToUserId);
+                if (assignUser == null)
+                    return NotFound(new JsonResult("Пользватель на найден") { StatusCode = 401 });
+                task.AssignedUser = assignUser;
+            }
+
+            await _context.Tasks.AddAsync(task);
+            await _context.SaveChangesAsync();
+
+            return Ok(task); 
         }
 
         [HttpPost("{id}", Name = "assign-user-to-task")]

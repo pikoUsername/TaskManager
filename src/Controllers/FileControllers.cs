@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace TaskManager.Controllers
 {
     [SwaggerTag("files")]
-    [Route("api/files/[controller]")]
+    [Route("api/files/")]
     [ApiController]
     public class FileController : ControllerBase
     {
@@ -24,7 +24,7 @@ namespace TaskManager.Controllers
             _context = context;
         }
 
-        [HttpPost("upload")]
+        [HttpPost("upload", Name  = "upload-file")]
         public async Task<ActionResult<FileModel>> UploadFile(IFormFile file)
         {
             if (file == null || file.Length == 0)
@@ -55,9 +55,9 @@ namespace TaskManager.Controllers
         }
 
         [HttpGet("download/{id}")]
-        public IActionResult DownloadFile(int id)
+        public IActionResult DownloadFile(Guid id)
         {
-            var fileModel = _context.FileModels.Find(id);
+            var fileModel = _context.FileModels.FirstOrDefault(x => x.Id == id);
             if (fileModel == null)
                 return NotFound();
 

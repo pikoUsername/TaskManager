@@ -73,5 +73,20 @@ namespace TaskManager.Controllers
 
             return Ok(comment);
         }
+
+        [HttpPatch("{id}", Name = "update-comment")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<ActionResult<Comment>> UpdateComment(Guid id, [FromBody] UpdateCommentSchema model)
+        {
+            var comment = await _context.Comments.FirstOrDefaultAsync(x => x.Id == id);
+            if (comment == null)
+                return NotFound(new JsonResult("Коментарий не найден") { StatusCode = 401});
+            comment.Text = model.Text;
+
+            _context.Update(comment);
+            await _context.SaveChangesAsync(); 
+
+            return Ok(comment);
+        }
     }
 }

@@ -69,6 +69,10 @@ namespace TaskManager.Controllers
             // Генерируем JWT токен
             var token = GenerateJwtToken(model.Email);
             var expiresIn = _configuration["Jwt:ExpireMinutes"];
+            if (expiresIn == null)
+            {
+                throw new Exception("Jwt:ExpireMinutes is empty"); 
+            }
 
             // Возвращаем Bearer JWT токен
             return Ok(new LoginResponseSchema { AccessToken = token, ExpiresIn = expiresIn });
@@ -76,7 +80,12 @@ namespace TaskManager.Controllers
 
         private string GenerateJwtToken(string username)
         {
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:SecretKey"]));
+            var secretKey = _configuration["Jwt:SecretKey"]; 
+            if (!string.IsNullOrEmpty(secretKey))
+            {
+                throw new Exception("Jwt:SecretKey is empty"); 
+            }
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(

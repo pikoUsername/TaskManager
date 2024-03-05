@@ -12,5 +12,10 @@
         public Guid? UserId { get; set; } 
         public int End { get; set; } = 10;
         public int Start { get; set; } = 0; 
+    }
+
+    public class UpdateCommentSchema
+    {
+        public string Text { get; set; }
     } 
 }
