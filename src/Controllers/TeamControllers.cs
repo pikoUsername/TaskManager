@@ -114,7 +114,7 @@ namespace TaskManager.Controllers
             if (team == null)
                 return NotFound(new JsonResult("Команда не найдена") { StatusCode = 401 });
             var workVisits = await _context.WorkVisits
-                .Where(x => team.DayTimetables.Contains(x.DayTimetable))  
+                .Where(x => team.DayTimetables.Contains(x.DayTimetable))
                 .ToListAsync(); 
             var users = await _context.Users
                 .Where(x => x.WorkType == workType)
