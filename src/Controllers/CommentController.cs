@@ -56,6 +56,7 @@ namespace TaskManager.Controllers
         public async Task<ActionResult<List<Comment>>> GetComments([FromQuery] GetCommentsScheme model)
         {
             var comments = await _context.Comments
+                .Include(x => x.Task)
                 .Where(x => x.Task.Id == model.TaskId)
                 .OrderBy(x => x.CreatedAt)
                 .Skip(model.Start)
@@ -84,7 +85,12 @@ namespace TaskManager.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<ActionResult<Comment>> UpdateComment(Guid id, [FromBody] UpdateCommentSchema model)
         {
-            var comment = await _context.Comments.FirstOrDefaultAsync(x => x.Id == id);
+            var comment = await _context.Comments
+                .Include(x => x.Task)
+                    .ThenInclude(x => x.Project)
+                .Include(x => x.Task)
+                    .ThenInclude(x => x.AssignedUser)
+                .FirstOrDefaultAsync(x => x.Id == id);
             if (comment == null)
                 return NotFound(new JsonResult("Коментарий не найден") { StatusCode = 401});
             comment.Text = model.Text;

@@ -16,9 +16,9 @@ public class TaskModel
 
     // Many-to-one relationships: Task -> User (Assigned_User, Created_By)
     public UserModel? AssignedUser { get; set; }
-    public Project Project { get; set; } = new Project();
+    public Project Project { get; set; } 
 
     // Many-to-many relationship: Task <-> TaskTags
-    public UserModel CreatedBy { get; set; } = new UserModel();   
+    public UserModel CreatedBy { get; set; }   
     public ICollection<TaskTag>? Tags { get; set; }
 }
