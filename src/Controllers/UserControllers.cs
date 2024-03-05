@@ -34,7 +34,10 @@ namespace TaskManager.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IEnumerable<UserModel>> GetUsers()
         {
-            var users = await _context.Users.ToListAsync();
+            var users = await _context.Users
+                .Include(x => x.WorkVisits)
+                .Include(x => x.Avatar)
+                .ToListAsync();
 
             return users;
         }
@@ -43,7 +46,10 @@ namespace TaskManager.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetUser(Guid id)
         {
-            var user = await _context.Users.SingleOrDefaultAsync(
+            var user = await _context.Users
+                .Include(x => x.WorkVisits)
+                .Include(x => x.Avatar)
+                .SingleOrDefaultAsync(
                 x => x.Id == id);
             if (user == null)
             {
@@ -87,7 +93,10 @@ namespace TaskManager.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<ActionResult<UserModel>> GetMe()
         {
-            var user = await _context.Users.SingleOrDefaultAsync(
+            var user = await _context.Users
+                .Include(x => x.WorkVisits)
+                .Include(x => x.Avatar)
+                .SingleOrDefaultAsync(
                 x => x.Email == User.Identity.Name);
             if (user == null)
             {

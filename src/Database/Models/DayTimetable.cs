@@ -13,7 +13,7 @@ public class DayTimetable
     public string Name { get; set; } = string.Empty;
 
     // One-to-many relationship: DayTimetable -> WorkVisits
-    public ICollection<WorkVisit>? WorkVisits { get; set; }
+    //public ICollection<WorkVisit>? WorkVisits { get; set; }
 
     public static List<DayTimetable> CreateDefaultTimeTable()
     {

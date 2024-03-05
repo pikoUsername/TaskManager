@@ -358,7 +358,7 @@ namespace TaskManager.Migrations
                     b.Property<DateTime>("EndedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid>("UserId")
+                    b.Property<Guid?>("UserModelId")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("VisitedAt")
@@ -368,7 +368,7 @@ namespace TaskManager.Migrations
 
                     b.HasIndex("DayTimetableId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserModelId");
 
                     b.ToTable("WorkVisits");
                 });
@@ -517,20 +517,16 @@ namespace TaskManager.Migrations
             modelBuilder.Entity("TaskManager.Database.Models.WorkVisit", b =>
                 {
                     b.HasOne("TaskManager.Database.Models.DayTimetable", "DayTimetable")
-                        .WithMany("WorkVisits")
+                        .WithMany()
                         .HasForeignKey("DayTimetableId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TaskManager.Database.Models.UserModel", "User")
+                    b.HasOne("TaskManager.Database.Models.UserModel", null)
                         .WithMany("WorkVisits")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserModelId");
 
                     b.Navigation("DayTimetable");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("TaskModelTaskTag", b =>
@@ -546,11 +542,6 @@ namespace TaskManager.Migrations
                         .HasForeignKey("TasksId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("TaskManager.Database.Models.DayTimetable", b =>
-                {
-                    b.Navigation("WorkVisits");
                 });
 
             modelBuilder.Entity("TaskManager.Database.Models.Group", b =>

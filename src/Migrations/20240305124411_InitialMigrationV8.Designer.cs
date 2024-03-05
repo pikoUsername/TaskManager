@@ -12,8 +12,8 @@ using TaskManager.Database;
 namespace TaskManager.Migrations
 {
     [DbContext(typeof(TaskManagerContext))]
-    [Migration("20240305113612_RemoveDefaultValue")]
-    partial class RemoveDefaultValue
+    [Migration("20240305124411_InitialMigrationV8")]
+    partial class InitialMigrationV8
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -520,7 +520,7 @@ namespace TaskManager.Migrations
             modelBuilder.Entity("TaskManager.Database.Models.WorkVisit", b =>
                 {
                     b.HasOne("TaskManager.Database.Models.DayTimetable", "DayTimetable")
-                        .WithMany("WorkVisits")
+                        .WithMany()
                         .HasForeignKey("DayTimetableId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -549,11 +549,6 @@ namespace TaskManager.Migrations
                         .HasForeignKey("TasksId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("TaskManager.Database.Models.DayTimetable", b =>
-                {
-                    b.Navigation("WorkVisits");
                 });
 
             modelBuilder.Entity("TaskManager.Database.Models.Group", b =>

@@ -2,7 +2,7 @@
 {
     public class WorkVisitScheme
     {
-        public Guid UserId;
-        public DateTime VisitedAt; 
+        public Guid UserId { get; set; }
+        public DateTime VisitedAt { get; set; } 
     }
 }

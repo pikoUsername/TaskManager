@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace TaskManager.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialMigrationsv8 : Migration
+    public partial class InitialMigrationV8 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -57,7 +57,7 @@ namespace TaskManager.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Text = table.Column<string>(type: "text", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     TaskId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>

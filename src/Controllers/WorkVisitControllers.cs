@@ -1,35 +1,29 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Swashbuckle.AspNetCore.Annotations;
 using TaskManager.Database;
 using TaskManager.Database.Models;
 using TaskManager.Schemas;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Configuration;
-using System;
-using System.Threading.Tasks;
 
 namespace TaskManager.Controllers
 {
+    [SwaggerTag("work-visits")]
     [Route("api/visit/")]
     [ApiController]
-    [SwaggerTag("work-visits")]
     public class WorkVisitControllers : ControllerBase
     {
         private readonly TaskManagerContext _context;
         private readonly ILogger<WorkVisitControllers> _logger;
-        private readonly IConfiguration _configuration;
 
         public WorkVisitControllers(
             TaskManagerContext context,
-            IConfiguration configuration,
             ILogger<WorkVisitControllers> logger
         )
         {
             _context = context;
             _logger = logger;
-            _configuration = configuration;
         }
 
         [HttpPost(Name = "register-work-visit")]
@@ -41,8 +35,8 @@ namespace TaskManager.Controllers
                 return NotFound(new JsonResult("Пользователь не найден") { StatusCode = 404 });
             }
 
-            var dayName = DateTime.Now.DayOfWeek.ToString();
-            var day = await _context.DayTimetables.FirstOrDefaultAsync(d => d.Day.ToString() == dayName);
+            var dayName = DateTime.UtcNow.DayOfWeek; 
+            var day = await _context.DayTimetables.FirstOrDefaultAsync(d => d.Day == dayName);
             if (day == null)
             {
                 return BadRequest(new JsonResult($"{dayName} отсутствует в базе данных") { StatusCode = 400 });
@@ -52,10 +46,11 @@ namespace TaskManager.Controllers
 
             WorkVisit visit = new WorkVisit()
             {
-                User = worker,
                 VisitedAt = DateTime.UtcNow,
                 DayTimetable = day,
             };
+
+            worker.WorkVisits.Add(visit);
 
             _context.WorkVisits.Add(visit);
             await _context.SaveChangesAsync();
