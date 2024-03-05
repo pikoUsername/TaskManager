@@ -64,6 +64,7 @@ namespace TaskManager.Controllers
 
             Group defaultGroup = new Group()
             {
+                Name = "Сотрудники",
                 Owner = ownerUser, 
                 Role = GroupRoles.employee,
                 Users = new List<UserModel>()
@@ -71,6 +72,7 @@ namespace TaskManager.Controllers
 
             Group ownerGroup = new Group()
             {
+                Name = "Руководители",
                 Role = GroupRoles.employee,
                 Owner = ownerUser,
                 Users = new List<UserModel>()
@@ -86,13 +88,13 @@ namespace TaskManager.Controllers
             await _context.Groups.AddAsync(defaultGroup);
             await _context.Groups.AddAsync(ownerGroup);
 
-            await _context.Teams.AddAsync(team);
             await _context.SaveChangesAsync();
 
             team.Groups.Add(defaultGroup);
             team.Groups.Add(ownerGroup);
 
-            _context.Teams.Update(team);
+
+            await _context.Teams.AddAsync(team);
             await _context.SaveChangesAsync(); 
 
             return Ok(team); 
