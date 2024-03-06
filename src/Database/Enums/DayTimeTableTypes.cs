@@ -1,7 +1,7 @@
 namespace TaskManager.Database.Models; 
 
-public enum DayTimeTableTypes
+public class DayTimeTableTypes
 {
-    work,
-    weekend
+    public static readonly string work = "work";
+    public static readonly string weekend = "weekend"; 
 }

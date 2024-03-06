@@ -24,7 +24,7 @@ namespace TaskManager.Controllers
 
         [HttpGet(Name = "get-teams-all")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> GetTeamsAll([FromQuery] GetTeamsSchema model)
+        public async Task<ActionResult<List<Team>>> GetTeamsAll([FromQuery] GetTeamsSchema model)
         {
             List<Team> teams;
             if (model.UserId == null)
@@ -41,7 +41,7 @@ namespace TaskManager.Controllers
 
         [HttpPost(Name = "create-team")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> CreateTeam([FromBody] CreateTeamSchema model)
+        public async Task<ActionResult<Team>> CreateTeam([FromBody] CreateTeamSchema model)
         {
             var ownerUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == User.Identity.Name);
             if (ownerUser == null)
@@ -102,7 +102,7 @@ namespace TaskManager.Controllers
 
         [HttpGet("{id}", Name = "get-team")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> GetTeam(Guid id)
+        public async Task<ActionResult<Team>> GetTeam(Guid id)
         {
             var team = await _context.Groups.FirstOrDefaultAsync(x => x.Id == id); 
             return Ok(team);
@@ -110,7 +110,7 @@ namespace TaskManager.Controllers
 
         [HttpGet("{id}/attendance", Name = "get-team-attendance")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<ActionResult<List<AttendanceUserScheme>>> GetTeamAttendance(Guid id, UserWorkTypes workType)
+        public async Task<ActionResult<List<AttendanceUserScheme>>> GetTeamAttendance(Guid id, string workType)
         {
             var team = await _context.Teams.FirstOrDefaultAsync();
             if (team == null)

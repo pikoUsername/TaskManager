@@ -8,6 +8,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting.Internal;
+using Microsoft.EntityFrameworkCore;
 
 namespace TaskManager.Controllers
 {
@@ -58,9 +59,9 @@ namespace TaskManager.Controllers
         }
 
         [HttpGet("download/{id}")]
-        public IActionResult DownloadFile(Guid id)
+        public async Task<IActionResult> DownloadFile(Guid id)
         {
-            var fileModel = _context.FileModels.FirstOrDefault(x => x.Id == id);
+            var fileModel = await _context.FileModels.FirstOrDefaultAsync(x => x.Id == id);
             if (fileModel == null)
                 return NotFound();
 

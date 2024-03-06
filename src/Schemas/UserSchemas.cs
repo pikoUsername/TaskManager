@@ -28,6 +28,6 @@ namespace TaskManager.Schemas
         public string FullName { get; set; }
         public bool Blocked { get; set; } = false;
         public FileModel? Avatar { get; set; }
-        public UserWorkTypes WorkType { get; set; }
+        public string WorkType { get; set; }
     } 
 }

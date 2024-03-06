@@ -8,7 +8,7 @@ public class DayTimetable
     public Guid Id { get; set; }
     public DateTime StartsAt { get; set; }
     public DateTime EndsAt { get; set; }
-    public DayTimeTableTypes Type { get; set; } = DayTimeTableTypes.work;
+    public string Type { get; set; } = DayTimeTableTypes.work;
     public DayOfWeek Day { get; set; } = DayOfWeek.Saturday; 
     public string Name { get; set; } = string.Empty;
 

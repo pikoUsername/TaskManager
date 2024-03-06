@@ -44,7 +44,7 @@ namespace TaskManager.Controllers
 
         [HttpGet("{id}", Name = "get-user")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> GetUser(Guid id)
+        public async Task<ActionResult<UserModel>> GetUser(Guid id)
         {
             var user = await _context.Users
                 .Include(x => x.WorkVisits)
@@ -61,7 +61,7 @@ namespace TaskManager.Controllers
 
         [HttpPatch("{id}", Name = "update-user")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> UpdateUser(Guid id, [FromBody] UpdateUserScheme model)
+        public async Task<ActionResult<UserModel>> UpdateUser(Guid id, [FromBody] UpdateUserScheme model)
         {
             var user = await _context.Users.SingleOrDefaultAsync(
                 x => x.Id == id);

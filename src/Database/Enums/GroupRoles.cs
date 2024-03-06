@@ -1,9 +1,9 @@
 namespace TaskManager.Database.Models; 
 
-public enum GroupRoles
+public class GroupRoles
 {
-    admin,
-    manager,
-    supervisor,
-    employee
+    public static readonly string admin = "admin";
+    public static readonly string manager = "manager";
+    public static readonly string supervisor = "supervisor";
+    public static readonly string employee = "employee"; 
 }

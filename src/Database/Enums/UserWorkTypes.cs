@@ -1,8 +1,8 @@
 namespace TaskManager.Database.Models; 
 
-public enum UserWorkTypes
+public class UserWorkTypes
 {
-    office,
-    online,
-    unable
+    public static readonly string office = "office"; 
+    public static readonly string online = "online";
+    public static readonly string unable = "unable";
 }
