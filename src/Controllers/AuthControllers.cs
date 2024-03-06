@@ -48,6 +48,7 @@ namespace TaskManager.Controllers
             {
                 FullName = model.FullName,
                 Email = model.Email,
+                WorkType = UserWorkTypes.office, 
             };
             userCreate.HashedPassword = _passwordHasherService.HashPassword(userCreate, model.Password);
 

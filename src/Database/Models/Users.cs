@@ -17,7 +17,7 @@ public class UserModel
     public FileModel? Avatar { get; set; }
     public string? Telegram { get; set; }
     public FileModel? Banner { get; set; }
-    public string WorkType { get; set; } = UserWorkTypes.office; 
+    public string WorkType { get; set; }  
 
     // One-to-many relationship: User -> WorkVisits
     public ICollection<WorkVisit> WorkVisits { get; set; } = new List<WorkVisit>();

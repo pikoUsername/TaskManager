@@ -6,9 +6,11 @@ namespace TaskManager.Database.Models
     {
         [Key]
         public Guid Id { get; set; }
+        [Required]
         public string FileName { get; set; } = string.Empty;
         public string? MimeType { get; set; }
         public string? Size { get; set; }
+        [Required]
         public string FilePath { get; set; } = string.Empty; 
     }
 }

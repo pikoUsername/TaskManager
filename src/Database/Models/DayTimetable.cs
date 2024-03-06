@@ -6,10 +6,13 @@ public class DayTimetable
 {
     [Key]
     public Guid Id { get; set; }
+    [Required]
     public DateTime StartsAt { get; set; }
+    [Required]
     public DateTime EndsAt { get; set; }
     public string Type { get; set; } = DayTimeTableTypes.work;
-    public DayOfWeek Day { get; set; } = DayOfWeek.Saturday; 
+    public DayOfWeek Day { get; set; } = DayOfWeek.Saturday;
+    [Required]
     public string Name { get; set; } = string.Empty;
 
     // One-to-many relationship: DayTimetable -> WorkVisits
