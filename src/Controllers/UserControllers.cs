@@ -86,7 +86,7 @@ namespace TaskManager.Controllers
             _context.Update(user);
             await _context.SaveChangesAsync();
 
-            return Ok(new JsonResult(user));
+            return Ok(user);
         }
 
         [HttpGet("me", Name = "get-me")]
@@ -103,7 +103,7 @@ namespace TaskManager.Controllers
                 return NotFound(new JsonResult("Not found") { StatusCode = 400});
             }
 
-            return Ok(new JsonResult(user));
+            return Ok(user);
         }
     }
 } 

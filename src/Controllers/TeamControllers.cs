@@ -36,7 +36,7 @@ namespace TaskManager.Controllers
                 teams = await _context.Teams.ToListAsync();
             }
 
-            return Ok(new JsonResult(teams));  
+            return Ok(teams);  
         }
 
         [HttpPost(Name = "create-team")]
@@ -105,7 +105,7 @@ namespace TaskManager.Controllers
         public async Task<IActionResult> GetTeam(Guid id)
         {
             var team = await _context.Groups.FirstOrDefaultAsync(x => x.Id == id); 
-            return Ok(new JsonResult(team));
+            return Ok(team);
         }
 
         [HttpGet("{id}/attendance", Name = "get-team-attendance")]

@@ -47,7 +47,7 @@ namespace TaskManager.Controllers
                     .ToListAsync(); 
             }
 
-            return Ok(new JsonResult(groups));
+            return Ok(groups);
         }
 
         [HttpPost(Name = "create-group")]
@@ -87,7 +87,7 @@ namespace TaskManager.Controllers
             _context.Update(team);
             await _context.SaveChangesAsync();
             
-            return Ok(new JsonResult(groups));
+            return Ok(groups);
         }
 
         [HttpDelete("{id}", Name = "delete-group")]
@@ -105,7 +105,7 @@ namespace TaskManager.Controllers
             _context.Remove(group);
             await _context.SaveChangesAsync();
 
-            return Ok(new JsonResult(group));
+            return Ok(group);
         }
     }
 }

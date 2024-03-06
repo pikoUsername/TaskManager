@@ -63,7 +63,7 @@ namespace TaskManager.Controllers
             var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == model.Email);
             if (user == null)
             {
-                return BadRequest();
+                return BadRequest(new JsonResult("Такой пользватель не существует") { StatusCode = 401});
             }
 
             // Генерируем JWT токен
