@@ -100,9 +100,9 @@ app.UseStaticFiles();
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
-app.UseAuthentication(); 
+app.UseAuthentication();
 
-
+app.UseCors("TaskManger"); 
 app.MapControllers();
 
 app.Run();
