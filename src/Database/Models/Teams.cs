@@ -16,4 +16,12 @@ public class Team
     // One-to-many relationship: Team -> Groups
     public ICollection<Group> Groups { get; set; }
     public ICollection<DayTimetable> DayTimetables { get; set; } = new List<DayTimetable>();
+
+    public int MembersCount
+    {
+        get
+        {
+            return Groups.Count();
+        }
+    }
 }
