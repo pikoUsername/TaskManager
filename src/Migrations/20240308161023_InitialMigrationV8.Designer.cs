@@ -12,7 +12,7 @@ using TaskManager.Database;
 namespace TaskManager.Migrations
 {
     [DbContext(typeof(TaskManagerContext))]
-    [Migration("20240305124411_InitialMigrationV8")]
+    [Migration("20240308161023_InitialMigrationV8")]
     partial class InitialMigrationV8
     {
         /// <inheritdoc />
@@ -34,6 +34,9 @@ namespace TaskManager.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<Guid>("CreatedById")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid>("TaskId")
                         .HasColumnType("uuid");
 
@@ -42,6 +45,8 @@ namespace TaskManager.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CreatedById");
 
                     b.HasIndex("TaskId");
 
@@ -70,8 +75,9 @@ namespace TaskManager.Migrations
                     b.Property<Guid?>("TeamId")
                         .HasColumnType("uuid");
 
-                    b.Property<int>("Type")
-                        .HasColumnType("integer");
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -118,8 +124,9 @@ namespace TaskManager.Migrations
                     b.Property<Guid?>("OwnerId")
                         .HasColumnType("uuid");
 
-                    b.Property<int>("Role")
-                        .HasColumnType("integer");
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<Guid?>("TeamId")
                         .HasColumnType("uuid");
@@ -157,6 +164,9 @@ namespace TaskManager.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("CreatedById")
                         .HasColumnType("uuid");
@@ -211,8 +221,9 @@ namespace TaskManager.Migrations
                     b.Property<DateTime>("StartedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -279,6 +290,10 @@ namespace TaskManager.Migrations
                     b.Property<bool>("Deleted")
                         .HasColumnType("boolean");
 
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
@@ -327,8 +342,9 @@ namespace TaskManager.Migrations
                     b.Property<string>("Telegram")
                         .HasColumnType("text");
 
-                    b.Property<int>("WorkType")
-                        .HasColumnType("integer");
+                    b.Property<string>("WorkType")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -361,7 +377,7 @@ namespace TaskManager.Migrations
                     b.Property<DateTime>("EndedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid>("UserId")
+                    b.Property<Guid?>("UserModelId")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("VisitedAt")
@@ -371,7 +387,7 @@ namespace TaskManager.Migrations
 
                     b.HasIndex("DayTimetableId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserModelId");
 
                     b.ToTable("WorkVisits");
                 });
@@ -393,11 +409,19 @@ namespace TaskManager.Migrations
 
             modelBuilder.Entity("TaskManager.Database.Models.Comment", b =>
                 {
+                    b.HasOne("TaskManager.Database.Models.UserModel", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("TaskManager.Database.Models.TaskModel", "Task")
                         .WithMany()
                         .HasForeignKey("TaskId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("CreatedBy");
 
                     b.Navigation("Task");
                 });
@@ -525,15 +549,11 @@ namespace TaskManager.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TaskManager.Database.Models.UserModel", "User")
+                    b.HasOne("TaskManager.Database.Models.UserModel", null)
                         .WithMany("WorkVisits")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserModelId");
 
                     b.Navigation("DayTimetable");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("TaskModelTaskTag", b =>

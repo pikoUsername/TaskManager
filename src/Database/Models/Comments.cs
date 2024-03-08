@@ -13,6 +13,7 @@ public class Comment
 
     // Many-to-one relationship: Comment -> Task
     [Required]
-    public TaskModel Task { get; set; } = new TaskModel();
-
+    public TaskModel Task { get; set; } = null!;
+    [Required]
+    public UserModel CreatedBy { get; set; } = null!;
 }

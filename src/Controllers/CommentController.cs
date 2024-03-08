@@ -38,12 +38,20 @@ namespace TaskManager.Controllers
             {
                 return NotFound(new JsonResult("Задача не найдена") { StatusCode = 404 });
             }
+            var owner = await _context.Users
+                .Include(x => x.Avatar)
+                .FirstOrDefaultAsync(x => x.Email == User.Identity.Name); 
+            if (owner == null)
+            {
+                throw new Exception("Что то пошло очень не так"); 
+            }
 
             var comment = new Comment()
             {
                 Task = task,
                 Text = model.Text,
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.UtcNow, 
+                CreatedBy = owner, 
             };
             _context.Comments.Add(comment);
             await _context.SaveChangesAsync();
@@ -57,6 +65,7 @@ namespace TaskManager.Controllers
         {
             var comments = await _context.Comments
                 .Include(x => x.Task)
+                .Include(x => x.CreatedBy)
                 .Where(x => x.Task.Id == model.TaskId)
                 .OrderBy(x => x.CreatedAt)
                 .Skip(model.Start)

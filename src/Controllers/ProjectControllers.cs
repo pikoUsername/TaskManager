@@ -27,7 +27,7 @@ namespace TaskManager.Controllers
         public async Task<ActionResult<Project>> CreateProject([FromBody] CreateProjectScheme model)
         {
             var email = User.Identity.Name;
-            var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == email );
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == email);
             if (user == null)
             {
                 return NotFound(new JsonResult("Пользователь не найден") { StatusCode = 404 });
@@ -42,8 +42,8 @@ namespace TaskManager.Controllers
                 Description = model.Description,
                 Name = model.Name,
                 CreatedBy = user,
-                TaskTypes = new List<TaskType>(), 
-                CreatedAt = DateTime.UtcNow 
+                TaskTypes = new List<TaskType>(),
+                CreatedAt = DateTime.UtcNow
             };
 
             projectCreate.TaskTypes.Add(inWorkType);
@@ -56,19 +56,20 @@ namespace TaskManager.Controllers
             return Ok(projectCreate);
         }
 
-        [HttpGet("one", Name = "get-project")]
+        [HttpGet("{id}", Name = "get-project")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<ActionResult<Project>> GetProject([FromQuery] ProjectSelecorScheme selector)
+        public async Task<ActionResult<Project>> GetProject(Guid id)
         {
-            if (selector.Name == null && selector.Id == null)
-            {
-                return BadRequest(new JsonResult("Неправильный формат") { StatusCode = 400 });
-            }
-
-            var project = await _context.Projects.FirstOrDefaultAsync(x => x.Name == selector.Name || x.Id == selector.Id);
+            var project = await _context.Projects
+                .Include(p => p.Users)
+                .Include(p => p.TaskTypes)
+                .Include(p => p.Team)
+                .Include(p => p.CreatedBy)
+                .Include(p => p.Icon)
+                .FirstOrDefaultAsync(x => x.Id == id);
             if (project == null)
             {
-                return NotFound(new JsonResult("Проект не найден") { StatusCode = 404 });
+                return NotFound(new JsonResult("Проект не найден") { StatusCode = 401 });
             }
 
             return Ok(project);

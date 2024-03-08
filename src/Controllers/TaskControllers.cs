@@ -20,23 +20,45 @@ namespace TaskManager.Controllers
             _context = context;
         }
 
+        [HttpGet("{id}", Name = "get-task")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<ActionResult<TaskModel>> GetTask(Guid id)
+        {
+            var task = await _context.Tasks
+                .Include(x => x.Tags)
+                .Include(x => x.Project)
+                .Include(x => x.AssignedUser)
+                .Include(x => x.CreatedBy)
+                .FirstOrDefaultAsync(x => x.Id == id);
+            if (task == null)
+                return NotFound(new JsonResult("Не найдено") { StatusCode = 401 });
+
+            return Ok(task); 
+        }
+
+
         [HttpGet(Name = "get-tasks")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<ActionResult<List<TaskModel>>> GetTasks([FromQuery] GetTasksScheme model)
         {
             List<TaskModel> tasks;
+            var baseRequest = _context.Tasks
+                .Include(x => x.Tags)
+                .Include(x => x.Project)
+                .Include(x => x.AssignedUser)
+                .Include(x => x.CreatedBy);
             if (model.UserTasks)
             {
                 var email = User.Identity.Name;
                 var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == email);
 
-                tasks = await _context.Tasks
+                tasks = await baseRequest
                     .Where(x => x.AssignedUser.Id == user.Id)
                     .ToListAsync();
             }
             else
             {
-                tasks = await _context.Tasks
+                tasks = await baseRequest
                     .Where(
                         x => x.AssignedUser.Id == model.UserId ||
                         x.Project.Id == model.ProjectId

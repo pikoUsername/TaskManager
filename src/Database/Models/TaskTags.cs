@@ -6,6 +6,7 @@ public class TaskTag
 {
     [Key]
     public Guid Id { get; set; }
+    [Required]
     public string Name { get; set; } = string.Empty;
 
     // Many-to-many relationship: TaskTag <-> Task

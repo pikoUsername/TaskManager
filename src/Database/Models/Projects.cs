@@ -17,6 +17,7 @@ public class Project
     // Many-to-one relationship: Project -> Team
     public Team? Team { get; set; }
     public ICollection<UserModel> Users { get; set; }
+    [Required]
     public UserModel CreatedBy { get; set; } 
     public DateTime CreatedAt { get; set; } 
 

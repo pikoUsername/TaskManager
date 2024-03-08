@@ -28,6 +28,8 @@ namespace TaskManager.Controllers
         {
             var baseRequest = _context.Teams
                     .Include(x => x.Groups)
+                        .ThenInclude(x => x.Users)
+                            .ThenInclude(x => x.Avatar)
                     .Include(x => x.DayTimetables)
                     .Include(x => x.Avatar); 
             if (model.UserId == null)
@@ -64,6 +66,7 @@ namespace TaskManager.Controllers
                 Name = model.Name,
                 Groups = new List<Group>(), 
                 CreatedBy = ownerUser,
+                Description = model.Description, 
                 DayTimetables = timeTables, 
             };
 
@@ -90,6 +93,7 @@ namespace TaskManager.Controllers
                     defaultGroup.Users.Add(user);
                 }
             }
+            ownerGroup.Users.Add(ownerUser); 
             await _context.Groups.AddAsync(defaultGroup);
             await _context.Groups.AddAsync(ownerGroup);
 
@@ -109,7 +113,17 @@ namespace TaskManager.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<ActionResult<Team>> GetTeam(Guid id)
         {
-            var team = await _context.Groups.FirstOrDefaultAsync(x => x.Id == id); 
+            var team = await _context.Teams
+                    .Include(x => x.Groups)
+                        .ThenInclude(x => x.Users)
+                            .ThenInclude(x => x.Avatar)
+                    .Include(x => x.DayTimetables)
+                    .Include(x => x.Avatar) 
+                    .FirstOrDefaultAsync(x => x.Id == id); 
+            if (team == null)
+            {
+                return NotFound(new JsonResult("Нету команды") { StatusCode = 401 }); 
+            }
             return Ok(team);
         }
 

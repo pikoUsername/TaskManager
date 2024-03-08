@@ -58,7 +58,8 @@ namespace TaskManager.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Text = table.Column<string>(type: "text", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    TaskId = table.Column<Guid>(type: "uuid", nullable: false)
+                    TaskId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedById = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -72,7 +73,7 @@ namespace TaskManager.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     StartsAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     EndsAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Type = table.Column<int>(type: "integer", nullable: false),
+                    Type = table.Column<string>(type: "text", nullable: false),
                     Day = table.Column<int>(type: "integer", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
                     TeamId = table.Column<Guid>(type: "uuid", nullable: true)
@@ -88,7 +89,7 @@ namespace TaskManager.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
-                    Role = table.Column<int>(type: "integer", nullable: false),
+                    Role = table.Column<string>(type: "text", nullable: false),
                     OwnerId = table.Column<Guid>(type: "uuid", nullable: true),
                     TeamId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
@@ -106,7 +107,8 @@ namespace TaskManager.Migrations
                     Description = table.Column<string>(type: "text", nullable: false),
                     IconId = table.Column<Guid>(type: "uuid", nullable: true),
                     TeamId = table.Column<Guid>(type: "uuid", nullable: true),
-                    CreatedById = table.Column<Guid>(type: "uuid", nullable: false)
+                    CreatedById = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -148,7 +150,7 @@ namespace TaskManager.Migrations
                     AvatarId = table.Column<Guid>(type: "uuid", nullable: true),
                     Telegram = table.Column<string>(type: "text", nullable: true),
                     BannerId = table.Column<Guid>(type: "uuid", nullable: true),
-                    WorkType = table.Column<int>(type: "integer", nullable: false),
+                    WorkType = table.Column<string>(type: "text", nullable: false),
                     GroupId = table.Column<Guid>(type: "uuid", nullable: true),
                     ProjectId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
@@ -184,7 +186,7 @@ namespace TaskManager.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Title = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: false),
-                    Status = table.Column<int>(type: "integer", nullable: false),
+                    Status = table.Column<string>(type: "text", nullable: false),
                     StartedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     EndsAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     AssignedUserId = table.Column<Guid>(type: "uuid", nullable: true),
@@ -219,6 +221,7 @@ namespace TaskManager.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: false),
                     Deleted = table.Column<bool>(type: "boolean", nullable: false),
                     AvatarId = table.Column<Guid>(type: "uuid", nullable: true),
                     CreatedById = table.Column<Guid>(type: "uuid", nullable: false)
@@ -246,8 +249,8 @@ namespace TaskManager.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     VisitedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     EndedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    DayTimetableId = table.Column<Guid>(type: "uuid", nullable: false)
+                    DayTimetableId = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserModelId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -259,11 +262,10 @@ namespace TaskManager.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_WorkVisits_Users_UserId",
-                        column: x => x.UserId,
+                        name: "FK_WorkVisits_Users_UserModelId",
+                        column: x => x.UserModelId,
                         principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -289,6 +291,11 @@ namespace TaskManager.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Comments_CreatedById",
+                table: "Comments",
+                column: "CreatedById");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Comments_TaskId",
@@ -398,15 +405,23 @@ namespace TaskManager.Migrations
                 column: "DayTimetableId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_WorkVisits_UserId",
+                name: "IX_WorkVisits_UserModelId",
                 table: "WorkVisits",
-                column: "UserId");
+                column: "UserModelId");
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Comments_Tasks_TaskId",
                 table: "Comments",
                 column: "TaskId",
                 principalTable: "Tasks",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Comments_Users_CreatedById",
+                table: "Comments",
+                column: "CreatedById",
+                principalTable: "Users",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
 
@@ -451,20 +466,16 @@ namespace TaskManager.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_Groups_Teams_TeamId",
-                table: "Groups");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_Projects_Teams_TeamId",
-                table: "Projects");
-
-            migrationBuilder.DropForeignKey(
                 name: "FK_Groups_Users_OwnerId",
                 table: "Groups");
 
             migrationBuilder.DropForeignKey(
                 name: "FK_Projects_Users_CreatedById",
                 table: "Projects");
+
+            migrationBuilder.DropForeignKey(
+                name: "FK_Teams_Users_CreatedById",
+                table: "Teams");
 
             migrationBuilder.DropTable(
                 name: "Comments");
@@ -491,9 +502,6 @@ namespace TaskManager.Migrations
                 name: "DayTimetables");
 
             migrationBuilder.DropTable(
-                name: "Teams");
-
-            migrationBuilder.DropTable(
                 name: "Users");
 
             migrationBuilder.DropTable(
@@ -501,6 +509,9 @@ namespace TaskManager.Migrations
 
             migrationBuilder.DropTable(
                 name: "Projects");
+
+            migrationBuilder.DropTable(
+                name: "Teams");
 
             migrationBuilder.DropTable(
                 name: "FileModels");

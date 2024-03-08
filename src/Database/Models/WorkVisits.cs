@@ -11,5 +11,6 @@ public class WorkVisit
 
     // Many-to-one relationships: WorkVisit -> User, DayTimetable
     //public UserModel User { get; set; } 
+    [Required]
     public DayTimetable DayTimetable { get; set; }    
 }
