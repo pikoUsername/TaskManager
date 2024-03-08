@@ -18,6 +18,7 @@ public class Project
     public Team? Team { get; set; }
     public ICollection<UserModel> Users { get; set; }
     public UserModel CreatedBy { get; set; } 
+    public DateTime CreatedAt { get; set; } 
 
     public Project()
     {

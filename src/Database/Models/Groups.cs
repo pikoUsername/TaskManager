@@ -11,5 +11,5 @@ public class Group
     [Required]
     public string Role { get; set; }
     public ICollection<UserModel> Users { get; set; } = new List<UserModel>();
-    public UserModel? Owner { get; set; } = new UserModel();
+    public UserModel? Owner { get; set; }
 }

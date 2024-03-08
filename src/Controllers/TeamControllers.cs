@@ -26,17 +26,22 @@ namespace TaskManager.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<ActionResult<List<Team>>> GetTeamsAll([FromQuery] GetTeamsSchema model)
         {
-            List<Team> teams;
+            var baseRequest = _context.Teams
+                    .Include(x => x.Groups)
+                    .Include(x => x.DayTimetables)
+                    .Include(x => x.Avatar); 
             if (model.UserId == null)
             {
-                teams = await _context.Teams.ToListAsync();
+                var teams = await baseRequest
+                    .ToListAsync();
+                return Ok(teams); 
             } else
             {
                 // TODO: make users specific get teams 
-                teams = await _context.Teams.ToListAsync();
+                var teams = await baseRequest
+                    .ToListAsync();
+                return Ok(teams); 
             }
-
-            return Ok(teams);  
         }
 
         [HttpPost(Name = "create-team")]

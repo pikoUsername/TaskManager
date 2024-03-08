@@ -43,6 +43,7 @@ namespace TaskManager.Controllers
                 Name = model.Name,
                 CreatedBy = user,
                 TaskTypes = new List<TaskType>(), 
+                CreatedAt = DateTime.UtcNow 
             };
 
             projectCreate.TaskTypes.Add(inWorkType);

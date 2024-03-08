@@ -12,7 +12,7 @@ public class Team
     public bool Deleted { get; set; } = false; 
     public FileModel? Avatar { get; set; }
 
-    public UserModel CreatedBy { get; set; } = new UserModel(); 
+    public UserModel CreatedBy { get; set; } 
     // One-to-many relationship: Team -> Groups
     public ICollection<Group> Groups { get; set; }
     public ICollection<DayTimetable> DayTimetables { get; set; } = new List<DayTimetable>();
