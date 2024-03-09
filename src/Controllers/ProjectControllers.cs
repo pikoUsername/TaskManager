@@ -155,11 +155,26 @@ namespace TaskManager.Controllers
 
                 project.Icon = foundIcon;
             }
-
             _context.Update(project);
             await _context.SaveChangesAsync();
 
             return Ok(project); 
+        }
+        [HttpGet("{id}/task/status", Name = "get-tasks-by-status")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<ActionResult<List<string>>> GetTasksByStatus(Guid id)
+        {
+            var tasks = await _context.Tasks
+                .Include(x => x.Project)
+                .Where(x => x.Project.Id == id)
+                .ToListAsync();
+            List<string> taskStatuses = []; 
+            foreach (var task in tasks)
+            {
+                taskStatuses.Add(task.Status);
+            }
+
+            return Ok(taskStatuses); 
         }
     }
 }

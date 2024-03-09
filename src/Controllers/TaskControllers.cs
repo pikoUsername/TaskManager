@@ -33,9 +33,8 @@ namespace TaskManager.Controllers
             if (task == null)
                 return NotFound(new JsonResult("Не найдено") { StatusCode = 401 });
 
-            return Ok(task); 
+            return Ok(task);
         }
-
 
         [HttpGet(Name = "get-tasks")]
         [Authorize(AuthenticationSchemes = "Bearer")]
