@@ -109,6 +109,51 @@ namespace TaskManager.Controllers
             return Ok(team); 
         }
 
+        [HttpPost("{id}/groups/adduser", Name = "add-user-to-team")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<ActionResult<Team>> AddUserToTeam(Guid id, [FromBody] AddUserToTeam model)
+        {
+            var team = await _context.Teams
+                .Include(x => x.Groups)
+                .FirstOrDefaultAsync(t => t.Id == id);
+            if (team == null) {
+                return NotFound(new JsonResult("Команда не найдена") { StatusCode = 401 });     
+            }
+            string groupName; 
+
+            if (model.Group == null)
+            {
+                groupName = GroupRoles.employee; 
+            } else
+            {
+                groupName = model.Group; 
+            }
+            var group = team.Groups.FirstOrDefault(x => x.Role == groupName);
+            if (group == null)
+            {
+                throw new Exception("Ты нарушил инварианты бизнес логики!!"); 
+            }
+
+            foreach (var userId in model.UserIds)
+            {
+                var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == userId);
+                if (user == null)
+                {
+                    return NotFound(new JsonResult($"{userId} пользватель не найден!")); 
+                }
+                if (group.Users.Contains(user))
+                {
+                    continue;  // ignore 
+                }
+                group.Users.Add(user); 
+            }
+            _context.Update(group);
+            _context.Update(team); 
+            await _context.SaveChangesAsync();  
+
+            return Ok(team);
+        }
+
         [HttpGet("{id}", Name = "get-team")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<ActionResult<Team>> GetTeam(Guid id)

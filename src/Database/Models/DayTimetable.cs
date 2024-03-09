@@ -5,7 +5,7 @@ namespace TaskManager.Database.Models;
 public class DayTimetable
 {
     [Key]
-    public Guid Id { get; set; }
+    [Required] public Guid Id { get; set; }
     [Required]
     public DateTime StartsAt { get; set; }
     [Required]

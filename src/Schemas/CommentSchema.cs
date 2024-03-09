@@ -1,8 +1,12 @@
-﻿namespace TaskManager.Schemas
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace TaskManager.Schemas
 {
     public class CreateCommentScheme
     {
+        [Required]
         public Guid TaskId { get; set; }
+        [Required]
         public string Text { get; set; } = string.Empty; 
     }
 

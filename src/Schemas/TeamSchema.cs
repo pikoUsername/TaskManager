@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using TaskManager.Database.Models;
 
 namespace TaskManager.Schemas
 {
@@ -13,7 +14,12 @@ namespace TaskManager.Schemas
         [Required]
         public List<Guid> UserIds { get; set; }
         [Required]
-        public string Description { get; set; } 
+        public string Description { get; set; }
     }
 
+    public class AddUserToTeam {
+        [Required]
+        public List<Guid> UserIds { get; set; }
+        public string? Group { get; set; } = GroupRoles.employee; 
+    }
 }

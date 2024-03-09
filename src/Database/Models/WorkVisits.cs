@@ -5,7 +5,7 @@ namespace TaskManager.Database.Models;
 public class WorkVisit
 {
     [Key]
-    public Guid Id { get; set; }
+    [Required] public Guid Id { get; set; }
     public DateTime VisitedAt { get; set; }
     public DateTime EndedAt { get; set; }
 

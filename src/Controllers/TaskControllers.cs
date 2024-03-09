@@ -55,12 +55,11 @@ namespace TaskManager.Controllers
                     .Where(x => x.AssignedUser.Id == user.Id)
                     .ToListAsync();
             }
-            else
+            else 
             {
                 tasks = await baseRequest
                     .Where(
-                        x => x.AssignedUser.Id == model.UserId ||
-                        x.Project.Id == model.ProjectId
+                        x => x.Project.Id == model.ProjectId
                     )
                     .ToListAsync();
             }

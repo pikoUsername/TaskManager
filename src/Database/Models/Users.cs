@@ -8,7 +8,7 @@ namespace TaskManager.Database.Models;
 public class UserModel
 {
     [Key]
-    public Guid Id { get; set; }
+    [Required] public Guid Id { get; set; }
 
     [Required]
     public string FullName { get; set; } = string.Empty;

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.Annotations;
+using Microsoft.EntityFrameworkCore.Query;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -32,14 +33,27 @@ namespace TaskManager.Controllers
         // GET: api/<ValuesController>
         [HttpGet(Name = "get-users")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IEnumerable<UserModel>> GetUsers()
+        public async Task<ActionResult<IEnumerable<UserModel>>> GetUsers([FromQuery] string? name)
         {
-            var users = await _context.Users
-                .Include(x => x.WorkVisits)
-                .Include(x => x.Avatar)
+            // Костыль 
+            IIncludableQueryable<UserModel, FileModel?> baseRequest; 
+            if (name == null)
+            {
+                baseRequest = _context.Users
+                    .Include(x => x.WorkVisits)
+                    .Include(x => x.Avatar);
+            }
+            else
+            {
+                baseRequest = _context.Users
+                    .Where(u => EF.Functions.ToTsVector(u.FullName).Matches(EF.Functions.ToTsQuery(name)))
+                    .Include(x => x.WorkVisits)
+                    .Include(x => x.Avatar);
+            } 
+            var users = await baseRequest
                 .ToListAsync();
 
-            return users;
+            return Ok(users);
         }
 
         [HttpGet("{id}", Name = "get-user")]

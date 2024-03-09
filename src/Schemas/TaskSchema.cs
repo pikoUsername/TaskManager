@@ -6,8 +6,7 @@ namespace TaskManager.Schemas
     public class GetTasksScheme
     {
         public Guid? ProjectId {  get; set; }
-        [Required]
-        public Guid UserId { get; set; }
+        public Guid? UserId { get; set; }
         public Guid? TeamId { get; set; }
         public bool UserTasks { get; set; } = false; 
     }
