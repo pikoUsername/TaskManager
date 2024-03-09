@@ -77,8 +77,9 @@ namespace TaskManager.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<ActionResult<UserModel>> UpdateUser(Guid id, [FromBody] UpdateUserScheme model)
         {
-            var user = await _context.Users.SingleOrDefaultAsync(
-                x => x.Id == id);
+            var user = await _context.Users
+                .Include(x => x.Avatar)
+                .SingleOrDefaultAsync(x => x.Id == id);
             if (user == null)
             {
                 return NotFound(new JsonResult("Not found") { StatusCode = 400 });
@@ -95,6 +96,15 @@ namespace TaskManager.Controllers
             if (!string.IsNullOrEmpty(model.Password))
             {
                 user.HashedPassword = _passwordHasherService.HashPassword(user, model.Password);
+            }
+            if (model.AvatarId != null)
+            {
+                var avatar = await _context.FileModels.FirstOrDefaultAsync(x => x.Id == model.AvatarId);
+                if (avatar == null) {
+                    return NotFound(new JsonResult("Ваш файл не найден") { StatusCode = 401 }); 
+                }
+
+                user.Avatar = avatar; 
             }
 
             _context.Update(user);
