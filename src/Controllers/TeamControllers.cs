@@ -169,6 +169,7 @@ namespace TaskManager.Controllers
             {
                 return NotFound(new JsonResult("Нету команды") { StatusCode = 401 }); 
             }
+            team.DayTimetables = team.DayTimetables.OrderBy(x => x.Day).ToList(); 
             return Ok(team);
         }
 

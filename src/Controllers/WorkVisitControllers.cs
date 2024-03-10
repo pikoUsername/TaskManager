@@ -36,7 +36,8 @@ namespace TaskManager.Controllers
             }
 
             var dayName = DateTime.UtcNow.DayOfWeek; 
-            var day = await _context.DayTimetables.FirstOrDefaultAsync(d => d.Day == dayName);
+            var actualDayName = DayTypesService.FromSTDWeekDay(dayName);
+            var day = await _context.DayTimetables.FirstOrDefaultAsync(d => d.Day == actualDayName);
             if (day == null)
             {
                 return BadRequest(new JsonResult($"{dayName} отсутствует в базе данных") { StatusCode = 400 });

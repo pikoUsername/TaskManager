@@ -82,8 +82,8 @@ namespace TaskManager.Controllers
                 Title = model.Title,
                 Description = model.Description,
                 Status = model.Status,
-                StartedAt = DateTime.UtcNow,
-                EndsAt = DateTime.UtcNow.AddDays(7),
+                StartedAt = model.StartsAt != null ? (DateTime)model.StartsAt : DateTime.UtcNow,
+                EndsAt = model.EndsAt != null ? (DateTime)model.EndsAt : DateTime.UtcNow.AddDays(7),
                 Project = project, 
                 CreatedBy = createdBy,
                 Tags = new List<TaskTag>()

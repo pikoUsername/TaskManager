@@ -35,5 +35,7 @@ namespace TaskManager.Schemas
         public string Description { get; set; } = string.Empty;
         [Required]
         public string Status { get; set; }
+        public DateTime? StartsAt {  get; set; }
+        public DateTime? EndsAt { get; set; }
     }
 }
