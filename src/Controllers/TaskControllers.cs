@@ -52,7 +52,7 @@ namespace TaskManager.Controllers
                 var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == email);
 
                 tasks = await baseRequest
-                    .Where(x => x.AssignedUser.Id == user.Id)
+                    .Where(x => x.AssignedUser.Id == user.Id || x.CreatedBy.Id == user.Id)
                     .ToListAsync();
             }
             else 
