@@ -122,8 +122,13 @@ namespace TaskManager.Controllers
             {
                 return NotFound(new JsonResult("Пользователь не найден") { StatusCode = 401 });
             }
+            var notUniqueUser = project.Users.FirstOrDefault(x => x.Id == user.Id); 
+            if (notUniqueUser != null) {
+                return BadRequest(new JsonResult("Пользватель уже в проекте")); 
+            }
 
             project.Users.Add(user);
+            _context.Update(project); 
             await _context.SaveChangesAsync();
 
             return Ok(project);

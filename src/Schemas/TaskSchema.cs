@@ -19,10 +19,9 @@ namespace TaskManager.Schemas
 
     public class UpdateTaskScheme
     {
-        [Required]
         public string Title { get; set; } = string.Empty;
-        [Required]
         public string Description { get; set; } = string.Empty;
+        public string TaskStatus {  get; set; } = string.Empty;
     }
 
     public class CreateTaskSchema {

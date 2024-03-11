@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.Annotations;
 using TaskManager.Database;
 using TaskManager.Database.Models;
@@ -134,13 +135,17 @@ namespace TaskManager.Controllers
                 return NotFound(new JsonResult("Задача не найдена") { StatusCode = 404 });
             }
 
-            if (model.Title != null)
+            if (!string.IsNullOrEmpty(model.Title))
             {
                 task.Title = model.Title;
             }
-            if (model.Description != null)
+            if (!string.IsNullOrEmpty(model.Description))
             {
                 task.Description = model.Description;
+            }
+            if (!string.IsNullOrEmpty(model.TaskStatus))
+            {
+                task.Status = model.TaskStatus;
             }
 
             _context.Update(task);
