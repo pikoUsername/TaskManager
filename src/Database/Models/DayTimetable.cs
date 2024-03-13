@@ -23,7 +23,7 @@ public class DayTimetable
     {
         List<DayTimetable> days = [];
 
-        var workStart = new DateTime(2024, 1, 1, 9, 0, 0); 
+        var workStart = new DateTime(2024, 1, 1, 9, 0, 0, DateTimeKind.Utc); 
 
         days.Add(new DayTimetable
         {
