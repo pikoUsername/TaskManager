@@ -3,31 +3,31 @@ namespace TaskManager.Database.Models;
 public enum DayTypes
 {
     //
-    // Сводка:
+    // пїЅпїЅпїЅпїЅпїЅпїЅ:
     //     Indicates Sunday.
     Sunday = 0,
     //
-    // Сводка:
+    // пїЅпїЅпїЅпїЅпїЅпїЅ:
     //     Indicates Monday.
     Monday = 1,
     //
-    // Сводка:
+    // пїЅпїЅпїЅпїЅпїЅпїЅ:
     //     Indicates Tuesday.
     Tuesday = 2,
     //
-    // Сводка:
+    // пїЅпїЅпїЅпїЅпїЅпїЅ:
     //     Indicates Wednesday.
     Wednesday = 3,
     //
-    // Сводка:
+    // пїЅпїЅпїЅпїЅпїЅпїЅ:
     //     Indicates Thursday.
     Thursday = 4,
     //
-    // Сводка:
+    // пїЅпїЅпїЅпїЅпїЅпїЅ:
     //     Indicates Friday.
     Friday = 5,
     //
-    // Сводка:
+    // пїЅпїЅпїЅпїЅпїЅпїЅ:
     //     Indicates Saturday.
     Saturday = 6, 
     All = 7, 
@@ -42,6 +42,6 @@ public class DayTypesService
                 return (DayTypes)Enum.Parse(typeof(DayTypes), name);    
             }
         }
-        throw new Exception("Не правильный тип данных"); 
+        throw new Exception("РќРµР»СЊР·СЏ"); 
     }
 }
